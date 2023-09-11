@@ -10,7 +10,7 @@ namespace survey_quiz_app.QuestionMapperProfile;
 
 public class DomainToResponse : Profile
 {
-    protected DomainToResponse()
+    public DomainToResponse()
     {
         CreateMap<User, UserDTOResponse>()
         // .ForMember(dest => dest.Id,

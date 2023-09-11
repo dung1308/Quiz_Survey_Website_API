@@ -70,7 +70,8 @@ public class Question
     }
 
     public double Score { get; set; }
-    // public Guid? QuestionBankId { get; set; }
-    // [ForeignKey("QuestionBankId")]
+    public Guid? QuestionBankId { get; set; }
+    
+    [ForeignKey("QuestionBankId")]
     public QuestionBank? QuestionBank { get; set; }
 }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,12 @@ namespace survey_quiz_app.Controllers.v1;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
 // [ApiVersion("1.0", Deprecated = true)] // Use for warning the version not supported much longer
-public class QuestionBankController : ControllerBase
+public class QuestionBankController : BaseController
 {
-    private readonly IUnitOfWork _unitOfWork;
-    public QuestionBankController(IUnitOfWork unitOfWork)
+
+    public QuestionBankController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
     {
-        _unitOfWork = unitOfWork;
+
     }
     [HttpGet("GetQuestionBank")]
     public async Task<IActionResult> Get()

@@ -13,14 +13,12 @@ namespace survey_quiz_app.Controllers.v1;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
 // [ApiVersion("1.0", Deprecated = true)] // Use for warning the version not supported much longer
-public class UserController : ControllerBase
+public class UserController : BaseController
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public UserController(IUnitOfWork unitOfWork, IMapper mapper)
+    public UserController(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
     {
-        _unitOfWork = unitOfWork;
+
     }
 
     [HttpGet("User")]
@@ -28,8 +26,8 @@ public class UserController : ControllerBase
     {
         var users = await _unitOfWork.Users.All();
         if(users == null) return NotFound("Users not found");
-        var result = _mapper.Map<UserDTO>(users);
-        return Ok(result);
+        //var result = _mapper.Map<UserDTO>(users);
+        return Ok(users);
     }
 
     [HttpGet]
@@ -38,24 +36,25 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
 
-        var questionBank = await _unitOfWork.Users.GetById(id);
-        if (questionBank == null) return NotFound();
-        return Ok(questionBank);
+        var user = await _unitOfWork.Users.GetById(id);
+        if (user == null) return NotFound();
+        var result = _mapper.Map<UserDTO>(user);
+        return Ok(result);
     }
 
     [HttpPost]
-[Route("AddUser")]
-[MapToApiVersion("1.0")]
-public async Task<IActionResult> AddUser([FromBody] UserDTO user)
-{
-    if(!ModelState.IsValid)
-        return BadRequest();
-    var result = _mapper.Map<User>(user);
-    await _unitOfWork.Users.Add(result);
-    await _unitOfWork.CompleteAsync();
-    var userDTO = _mapper.Map<UserDTO>(result);
-    return CreatedAtAction(nameof(GetUser), routeValues:new {userId = result.Id}, value:userDTO);
-}
+    [Route("AddUser")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> AddUser([FromBody] UserDTO user)
+    {
+        if(!ModelState.IsValid)
+            return BadRequest();
+        var result = _mapper.Map<User>(user);
+        await _unitOfWork.Users.Add(result);
+        await _unitOfWork.CompleteAsync();
+        var userDTO = _mapper.Map<UserDTO>(result);
+        return CreatedAtAction(nameof(GetUser), routeValues:new {userId = result.Id}, value:userDTO);
+    }
     
 
     [HttpDelete]

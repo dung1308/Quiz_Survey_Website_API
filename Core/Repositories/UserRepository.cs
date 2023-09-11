@@ -14,11 +14,13 @@ public class UserRepository : GenericRepository<User, int>, IUserRepository
     }
 
 
+
+
     public override async Task<IEnumerable<User>> All()
     {
         try
         {
-           return await _context.Users.ToListAsync();
+            return await _context.Users.ToListAsync();
         }
         catch (Exception e)
         {

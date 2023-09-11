@@ -12,7 +12,7 @@ using survey_quiz_app.Data;
 namespace survey_quiz_app.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230911015513_Initial migration")]
+    [Migration("20230911084748_Initial migration")]
     partial class Initialmigration
     {
         /// <inheritdoc />
