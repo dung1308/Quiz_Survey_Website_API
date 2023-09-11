@@ -22,6 +22,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         var _logger = loggerFactory.CreateLogger(categoryName: "logs");
 
         QuestionBanks = new QuestionBankRepository(_context, _logger);
+        // Users = new UserRepository(_context, _logger); // Error ????
     }
 
 

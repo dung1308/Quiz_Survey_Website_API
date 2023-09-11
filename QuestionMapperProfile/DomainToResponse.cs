@@ -26,19 +26,9 @@ public class DomainToResponse : Profile
         .ForMember(dest => dest.CategoryName,
         opt => opt.MapFrom(src => src.CategoryName));
 
-        CreateMap<Question, QuestionDTOResponse>()
-        .ForMember(dest => dest.QuestionName,
-        opt => opt.MapFrom(src => src.QuestionName))
-        .ForMember(dest => dest.ChoicesString,
-        opt => opt.MapFrom(src => src.ChoicesString))
-        .ForMember(dest => dest.Type,
-        opt => opt.MapFrom(src => src.Type))
-        .ForMember(dest => dest.AnswersString,
-        opt => opt.MapFrom(src => src.AnswersString))
-        .ForMember(dest => dest.OnAnswersString,
-        opt => opt.MapFrom(src => src.OnAnswersString))
-        .ForMember(dest => dest.Score,
-        opt => opt.MapFrom(src => src.Score));
+        // CreateMap<List<QuestionBank>, List<QuestionBankDTOResponse>>()
+        // .ForMember(dest => dest,
+        // opt => opt.MapFrom(src => src));
 
         CreateMap<QuestionBank, QuestionBankDTOResponse>()
         .ForMember(dest => dest.SurveyCode,

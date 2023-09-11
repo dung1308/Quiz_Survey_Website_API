@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using survey_quiz_app.Core;
 using survey_quiz_app.Data;
+using survey_quiz_app.DTO.Incoming;
 using survey_quiz_app.Models;
 
 namespace survey_quiz_app.Controllers.v1;
@@ -22,11 +23,15 @@ public class QuestionBankController : BaseController
     [HttpGet("GetQuestionBank")]
     public async Task<IActionResult> Get()
     {
-        if(await _unitOfWork.QuestionBanks.All() == null) return NotFound();
-        return Ok(await _unitOfWork.QuestionBanks.All());
+        // if(await _unitOfWork.QuestionBanks.All() == null) return NotFound();
+        // return Ok(await _unitOfWork.QuestionBanks.All());
+
+        if(await _unitOfWork.QuestionBanks.All() == null) return NotFound("Users not found");
+        var result = _mapper.Map<List<QuestionBankDTO>>(await _unitOfWork.QuestionBanks.All());
+        return Ok(result);
     }
 
-    // Default Version (Version 1.0)
+    //Default Version (Version 1.0)
 
     [HttpGet]
     [Route("User/{userId}/GetQuestionBank/{questionBankId}")]
@@ -34,7 +39,7 @@ public class QuestionBankController : BaseController
     public async Task<IActionResult> Get(int userId, Guid questionBankId)
     {
         var user = await _unitOfWork.Users.GetById(userId);
-        if (user == null || user.QuestionBankInteract.QuestionBanks == null) return NotFound();
+        if (user == null || user.QuestionBankInteract == null || user.QuestionBankInteract.QuestionBanks == null) return NotFound();
         // var questionBank = await _unitOfWork.QuestionBanks.GetById(questionBankId);
         var questionBank = user.QuestionBankInteract.QuestionBanks.FirstOrDefault(x => x.Id == questionBankId);
         if (questionBank == null) return NotFound();

@@ -6,6 +6,7 @@ using survey_quiz_app.Models;
 
 namespace survey_quiz_app.Core.Repositories;
 
+
 public class UserRepository : GenericRepository<User, int>, IUserRepository
 {
 

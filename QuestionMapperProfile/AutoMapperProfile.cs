@@ -11,15 +11,15 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
-        CreateMap<User, UserDTO>()
-        // .ForMember(dest => dest.Id,
-        // opt => opt.MapFrom(src => Guid.NewGuid()))
-        .ForMember(dest => dest.UserName,
-        opt => opt.MapFrom(src => src.UserName))
-        .ForMember(dest => dest.Password,
-        opt => opt.MapFrom(src => src.Password))
-        .ForMember(dest => dest.Email,
-        opt => opt.MapFrom(src => src.Email));
+        // CreateMap<User, UserDTO>()
+        // // .ForMember(dest => dest.Id,
+        // // opt => opt.MapFrom(src => Guid.NewGuid()))
+        // .ForMember(dest => dest.UserName,
+        // opt => opt.MapFrom(src => src.UserName))
+        // .ForMember(dest => dest.Password,
+        // opt => opt.MapFrom(src => src.Password))
+        // .ForMember(dest => dest.Email,
+        // opt => opt.MapFrom(src => src.Email));
 
         // CreateMap<User, UserDTO>();
 
@@ -31,27 +31,27 @@ public class AutoMapperProfile : Profile
         .ForMember(dest => dest.Email,
         opt => opt.MapFrom(src => src.Email));
 
-        CreateMap<CategoryList, CategoryListDTO>()
-        .ForMember(dest => dest.CategoryName,
-        opt => opt.MapFrom(src => src.CategoryName));
+        // CreateMap<CategoryList, CategoryListDTO>()
+        // .ForMember(dest => dest.CategoryName,
+        // opt => opt.MapFrom(src => src.CategoryName));
 
         CreateMap<CategoryListDTO, CategoryList>()
         .ForMember(dest => dest.CategoryName,
         opt => opt.MapFrom(src => src.CategoryName));
 
-        CreateMap<Question, QuestionDTO>()
-        .ForMember(dest => dest.QuestionName,
-        opt => opt.MapFrom(src => src.QuestionName))
-        .ForMember(dest => dest.ChoicesString,
-        opt => opt.MapFrom(src => src.ChoicesString))
-        .ForMember(dest => dest.Type,
-        opt => opt.MapFrom(src => src.Type))
-        .ForMember(dest => dest.AnswersString,
-        opt => opt.MapFrom(src => src.AnswersString))
-        .ForMember(dest => dest.OnAnswersString,
-        opt => opt.MapFrom(src => src.OnAnswersString))
-        .ForMember(dest => dest.Score,
-        opt => opt.MapFrom(src => src.Score));
+        // CreateMap<Question, QuestionDTO>()
+        // .ForMember(dest => dest.QuestionName,
+        // opt => opt.MapFrom(src => src.QuestionName))
+        // .ForMember(dest => dest.ChoicesString,
+        // opt => opt.MapFrom(src => src.ChoicesString))
+        // .ForMember(dest => dest.Type,
+        // opt => opt.MapFrom(src => src.Type))
+        // .ForMember(dest => dest.AnswersString,
+        // opt => opt.MapFrom(src => src.AnswersString))
+        // .ForMember(dest => dest.OnAnswersString,
+        // opt => opt.MapFrom(src => src.OnAnswersString))
+        // .ForMember(dest => dest.Score,
+        // opt => opt.MapFrom(src => src.Score));
 
         CreateMap<QuestionDTO, Question>()
         .ForMember(dest => dest.QuestionName,
@@ -67,25 +67,25 @@ public class AutoMapperProfile : Profile
         .ForMember(dest => dest.Score,
         opt => opt.MapFrom(src => src.Score));
 
-        CreateMap<QuestionBank, QuestionBankDTO>()
-        .ForMember(dest => dest.SurveyCode,
-        opt => opt.MapFrom(src => src.SurveyCode))
-        .ForMember(dest => dest.SurveyName,
-        opt => opt.MapFrom(src => src.SurveyName))
-        .ForMember(dest => dest.Owner,
-        opt => opt.MapFrom(src => src.Owner))
-        .ForMember(dest => dest.Category,
-        opt => opt.MapFrom(src => src.Category))
-        .ForMember(dest => dest.Timer,
-        opt => opt.MapFrom(src => src.Timer))
-        .ForMember(dest => dest.StartDate,
-        opt => opt.MapFrom(src => src.StartDate))
-        .ForMember(dest => dest.EndDate,
-        opt => opt.MapFrom(src => src.EndDate))
-        .ForMember(dest => dest.Status,
-        opt => opt.MapFrom(src => src.Status))
-        .ForMember(dest => dest.EnableStatus,
-        opt => opt.MapFrom(src => src.EnableStatus));
+        // CreateMap<QuestionBank, QuestionBankDTO>()
+        // .ForMember(dest => dest.SurveyCode,
+        // opt => opt.MapFrom(src => src.SurveyCode))
+        // .ForMember(dest => dest.SurveyName,
+        // opt => opt.MapFrom(src => src.SurveyName))
+        // .ForMember(dest => dest.Owner,
+        // opt => opt.MapFrom(src => src.Owner))
+        // .ForMember(dest => dest.Category,
+        // opt => opt.MapFrom(src => src.Category))
+        // .ForMember(dest => dest.Timer,
+        // opt => opt.MapFrom(src => src.Timer))
+        // .ForMember(dest => dest.StartDate,
+        // opt => opt.MapFrom(src => src.StartDate))
+        // .ForMember(dest => dest.EndDate,
+        // opt => opt.MapFrom(src => src.EndDate))
+        // .ForMember(dest => dest.Status,
+        // opt => opt.MapFrom(src => src.Status))
+        // .ForMember(dest => dest.EnableStatus,
+        // opt => opt.MapFrom(src => src.EnableStatus));
 
 
         CreateMap<QuestionBankDTO, QuestionBank>()
