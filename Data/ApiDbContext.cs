@@ -27,12 +27,12 @@ public class ApiDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<QuestionBank>(entity =>
-            entity.Property(x => x.Id)
-            .IsRequired()
-            .ValueGeneratedOnAdd()
-            .HasDefaultValueSql("NEWSEQUENTIALID()"));
+        // base.OnModelCreating(modelBuilder);
+        // modelBuilder.Entity<QuestionBank>(entity =>
+        //     entity.Property(x => x.Id)
+        //     .IsRequired()
+        //     .ValueGeneratedOnAdd()
+        //     .HasDefaultValueSql("NEWSEQUENTIALID()"));
         // modelBuilder.Entity<QuestionBankInteract>()
         //     .HasOne(qbi => qbi.User)
         //     .WithOne(u => u.QuestionBankInteract)

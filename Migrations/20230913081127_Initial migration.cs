@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -25,19 +24,6 @@ namespace survey_quiz_app.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "QuestionBankInteracts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ResultScores = table.Column<double>(type: "float", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_QuestionBankInteracts", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -55,7 +41,8 @@ namespace survey_quiz_app.Migrations
                 name: "QuestionBanks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     SurveyCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SurveyName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Owner = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -65,8 +52,7 @@ namespace survey_quiz_app.Migrations
                     EndDate = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Status = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     EnableStatus = table.Column<bool>(type: "bit", nullable: false),
-                    CategoryListId = table.Column<int>(type: "int", nullable: true),
-                    QuestionBankInteractId = table.Column<int>(type: "int", nullable: true)
+                    CategoryListId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -75,11 +61,6 @@ namespace survey_quiz_app.Migrations
                         name: "FK_QuestionBanks_CategoryList_CategoryListId",
                         column: x => x.CategoryListId,
                         principalTable: "CategoryList",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_QuestionBanks_QuestionBankInteracts_QuestionBankInteractId",
-                        column: x => x.QuestionBankInteractId,
-                        principalTable: "QuestionBankInteracts",
                         principalColumn: "Id");
                 });
 
@@ -92,17 +73,11 @@ namespace survey_quiz_app.Migrations
                     UserName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    QuestionBankInteractId = table.Column<int>(type: "int", nullable: true),
                     RoleId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_QuestionBankInteracts_QuestionBankInteractId",
-                        column: x => x.QuestionBankInteractId,
-                        principalTable: "QuestionBankInteracts",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Users_Roles_RoleId",
                         column: x => x.RoleId,
@@ -120,9 +95,8 @@ namespace survey_quiz_app.Migrations
                     ChoicesString = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     AnswersString = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    OnAnswersString = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Score = table.Column<double>(type: "float", nullable: false),
-                    QuestionBankId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    QuestionBankId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -135,13 +109,39 @@ namespace survey_quiz_app.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "QuestionBankInteracts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ResultScores = table.Column<double>(type: "float", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    QuestionBankId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuestionBankInteracts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_QuestionBankInteracts_QuestionBanks_QuestionBankId",
+                        column: x => x.QuestionBankId,
+                        principalTable: "QuestionBanks",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_QuestionBankInteracts_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ResultShows",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    OnAnswersString = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ResultScore = table.Column<double>(type: "float", nullable: true),
                     QuestionId = table.Column<int>(type: "int", nullable: true),
-                    OnAnswer = table.Column<double>(type: "float", nullable: true),
                     QuestionBankInteractId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -160,14 +160,19 @@ namespace survey_quiz_app.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuestionBankInteracts_QuestionBankId",
+                table: "QuestionBankInteracts",
+                column: "QuestionBankId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuestionBankInteracts_UserId",
+                table: "QuestionBankInteracts",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuestionBanks_CategoryListId",
                 table: "QuestionBanks",
                 column: "CategoryListId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_QuestionBanks_QuestionBankInteractId",
-                table: "QuestionBanks",
-                column: "QuestionBankInteractId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuestionBanks_SurveyCode",
@@ -191,13 +196,6 @@ namespace survey_quiz_app.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_QuestionBankInteractId",
-                table: "Users",
-                column: "QuestionBankInteractId",
-                unique: true,
-                filter: "[QuestionBankInteractId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
@@ -210,22 +208,22 @@ namespace survey_quiz_app.Migrations
                 name: "ResultShows");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "QuestionBankInteracts");
 
             migrationBuilder.DropTable(
                 name: "Questions");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "QuestionBanks");
 
             migrationBuilder.DropTable(
-                name: "CategoryList");
+                name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "QuestionBankInteracts");
+                name: "CategoryList");
         }
     }
 }

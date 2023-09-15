@@ -8,7 +8,9 @@ public interface IUnitOfWork
     IQuestionRepository Questions { get; }
     IUserRepository Users { get; }
     ICategoryListRepository CategoryLists { get; }
-
+    IRoleRepository Roles { get; }
+    IQuestionBankInteractRepository QuestionBankInteracts { get; }
+    IResultShowRepository ResultShows { get; }
 
     Task CompleteAsync();
 }

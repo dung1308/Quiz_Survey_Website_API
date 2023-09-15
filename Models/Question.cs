@@ -33,6 +33,7 @@ public class Question
     [StringLength(100)]
     public string? Type { get; set; }
 
+    private IEnumerable<String>? _answers;
     [StringLength(500)]
     [JsonIgnore]
     public string AnswersString { get; set; } = string.Empty;
@@ -41,37 +42,21 @@ public class Question
     {
         get
         {
-            _choices ??= AnswersString.Split(";;", StringSplitOptions.RemoveEmptyEntries).ToList();
-            return _choices;
+            _answers ??= AnswersString.Split(";;", StringSplitOptions.RemoveEmptyEntries).ToList();
+            return _answers;
         }
         set
         {
-            _choices = value;
-            AnswersString = string.Join(";;", _choices);
-        }
-    }
-
-    [StringLength(500)]
-    [JsonIgnore]
-    public string OnAnswersString { get; set; } = string.Empty;
-    [NotMapped]
-    public IEnumerable<string> OnAnswers
-    {
-        get
-        {
-            _choices ??= OnAnswersString.Split(";;", StringSplitOptions.RemoveEmptyEntries).ToList();
-            return _choices;
-        }
-        set
-        {
-            _choices = value;
-            OnAnswersString = string.Join(";;", _choices);
+            _answers = value;
+            AnswersString = string.Join(";;", _answers);
         }
     }
 
     public double Score { get; set; }
-    public Guid? QuestionBankId { get; set; }
+    public int? QuestionBankId { get; set; } // Guid? QuestionBankId
     
     [ForeignKey("QuestionBankId")]
     public QuestionBank? QuestionBank { get; set; }
+
+    public ICollection<ResultShow>? ResultShows { get; set; }
 }

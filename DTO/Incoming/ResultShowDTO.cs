@@ -6,5 +6,12 @@ namespace survey_quiz_app.DTO.Incoming;
 
 public class ResultShowDTO
 {
-    public double? OnAnswer { get; set; }
+    public int Id { get; set; }
+    public IEnumerable<string> OnAnswers { get; set; }
+
+    public double? ResultScore { get; set; }
+
+    public int? QuestionId { get; set; }
+    public int? QuestionBankInteractId { get; set; }
+
 }

@@ -6,13 +6,12 @@ namespace survey_quiz_app.DTO.Incoming;
 
 public class QuestionDTO
 {
+    public int Id { get; set; }
     public string QuestionName { get; set; } = string.Empty;
-
-    public string ChoicesString { get; set; } = string.Empty;
+    public IEnumerable<string> Choices{ get; set; }
     public string? Type { get; set; }
-
-    public string AnswersString { get; set; } = string.Empty;
-    public string OnAnswersString { get; set; } = string.Empty;
-
+    public IEnumerable<string> Answers{ get; set; } 
     public double Score { get; set; }
+    public int? QuestionBankId { get; set; }
+
 }

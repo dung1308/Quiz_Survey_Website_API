@@ -12,13 +12,15 @@ public class User
     public string UserName { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public int? QuestionBankInteractId { get; set; }
 
-    [ForeignKey("QuestionBankInteractId")]
-    public QuestionBankInteract? QuestionBankInteract { get; set; }
-    // public int? RoleId { get; set; }
+    public int? RoleId { get; set; }
 
-    // [ForeignKey("RoleId")]
+    // [ForeignKey("Id")]
+    // public QuestionBankInteract? QuestionBankInteract { get; set; }
+
+    public ICollection<QuestionBankInteract>? QuestionBankInteracts { get; set; }
+
+    [ForeignKey("RoleId")]
     public Role? Role { get; set; }
 
     public string? Permission => Role?.Permission;

@@ -30,7 +30,7 @@ public class QuestionBankController : ControllerBase
     [HttpGet]
     [Route("GetQuestionBank/{id}")]
     [MapToApiVersion("2.0")]
-    public async Task<IActionResult> Get(Guid id)
+    public async Task<IActionResult> Get(int id) //Guid id
     {
 
         var questionBank = await _unitOfWork.QuestionBanks.GetById(id);
@@ -51,7 +51,7 @@ public class QuestionBankController : ControllerBase
     [HttpDelete]
     [Route("DeleteQuestionBank")]
     [MapToApiVersion("2.0")]
-    public async Task<IActionResult> DeleteQuestionBank(Guid id)
+    public async Task<IActionResult> DeleteQuestionBank(int id) //Guid id
     {
         var questionBank = await _unitOfWork.QuestionBanks.GetById(id);
         if(questionBank == null) return NotFound();

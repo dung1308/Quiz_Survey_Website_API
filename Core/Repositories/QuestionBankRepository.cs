@@ -4,7 +4,7 @@ using survey_quiz_app.Models;
 
 namespace survey_quiz_app.Core.Repositories;
 
-public class QuestionBankRepository : GenericRepository<QuestionBank, Guid>, IQuestionBankRepository
+public class QuestionBankRepository : GenericRepository<QuestionBank, int>, IQuestionBankRepository //Guid
 {
     public QuestionBankRepository(ApiDbContext context, ILogger logger) : base(context, logger)
     {
@@ -24,7 +24,7 @@ public class QuestionBankRepository : GenericRepository<QuestionBank, Guid>, IQu
         }
     }
 
-    public override async Task<QuestionBank?> GetById(Guid id)
+    public override async Task<QuestionBank?> GetById(int id) //Guid id
     {
         try
         {
@@ -50,5 +50,17 @@ public class QuestionBankRepository : GenericRepository<QuestionBank, Guid>, IQu
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    public async Task<List<QuestionBank>?> GetByUser(List<int?>? userIdList)
+    {
+        var questionBanks = await _context.QuestionBanks.Where(q => userIdList.Contains(q.Id)).ToListAsync();
+        return questionBanks;
+    }
+
+    public async Task<List<QuestionBank>?> GetByUserAndCategory(List<int?>? userIdList, int categoryId)
+    {
+        var questionBanks = await _context.QuestionBanks.Where(q => userIdList.Contains(q.Id) && q.CategoryListId == categoryId).ToListAsync();
+        return questionBanks;
     }
 }

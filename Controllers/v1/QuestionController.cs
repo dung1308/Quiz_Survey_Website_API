@@ -10,7 +10,8 @@ using survey_quiz_app.Models;
 namespace survey_quiz_app.Controllers.v1;
 
 [ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
+// [Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/[controller]")]
 [ApiVersion("1.0")]
 // [ApiVersion("1.0", Deprecated = true)] // Use for warning the version not supported much longer
 public class QuestionController : BaseController
@@ -20,45 +21,44 @@ public class QuestionController : BaseController
 
     }
 
+
     [HttpGet]
-    [Route("User/{userId}/GetQuestionBank/{questionBankId}/Question")]
-    public async Task<IActionResult> GetQuestion(int userId, Guid questionBankId)
+    [Route("/Questions")]
+    public async Task<IActionResult> GetQuestions() //Guid questionBankId
     {
-        var user = await _unitOfWork.Users.GetById(userId);
-        // var questionBank = await _unitOfWork.QuestionBanks.GetById(questionBankId);
-        if (user == null || user.QuestionBankInteract == null || user.QuestionBankInteract.QuestionBanks == null) return NotFound();
-        var questionBank =  user.QuestionBankInteract.QuestionBanks.FirstOrDefault(x => x.Id == questionBankId);
-        if (questionBank == null) return NotFound();
-        var question = questionBank.Questions;
-        if(question == null) return NotFound("Users not found");
-        var result = _mapper.Map<UserDTO>(question);
+        if(await _unitOfWork.Questions.All() == null) return NotFound("Questions not found");
+        var result = _mapper.Map<List<QuestionDTO>>(await _unitOfWork.Questions.All());
         return Ok(result);
     }
 
-    // Default Version (Version 1.0)
 
     [HttpGet]
-    [Route("User/{userId}/GetQuestionBank/{questionBankId}/Question/{questionId}")]
-    [MapToApiVersion("1.0")]
-    public async Task<IActionResult> GetById(int userId,Guid questionBankId, int questionId)
+    [Route("/GetQuestionBank/{questionBankId}/Question")]
+    public async Task<IActionResult> GetQuestionByQuestionBankId(int questionBankId) //Guid questionBankId
     {
-        var user = await _unitOfWork.Users.GetById(userId);
-        if (user == null || user.QuestionBankInteract == null || user.QuestionBankInteract.QuestionBanks == null) return NotFound();
-        // var questionBank = await _unitOfWork.QuestionBanks.GetById(questionBankId);
-        if (user == null) return NotFound();
-        var questionBank = user.QuestionBankInteract.QuestionBanks.FirstOrDefault(x => x.Id == questionBankId);
-        if (questionBank == null) return NotFound();
-        if (questionBank.Questions == null) return NotFound();
-        var question = questionBank.Questions.FirstOrDefault(x => x.Id == questionId);
-        if (question == null) return NotFound();
-        var result = _mapper.Map<UserDTO>(question);
+        var questions = await _unitOfWork.Questions.GetAllByQuestionBankId(questionBankId);
+        if (questions == null) return NotFound("There is no questions existed with this QuestionBank Id");
+        var result = _mapper.Map<List<QuestionDTO>>(questions);
         return Ok(result);
     }
 
     
-    [HttpPost]
-    [Route("AddQuestion")]
-    [MapToApiVersion("1.0")]
+
+    // Default Version (Version 1.0)
+
+    [HttpGet]
+    [Route("/Question/{questionId}")]
+    // [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetById(int questionId) //Guid questionBankId
+    {
+        var question = await _unitOfWork.Questions.GetById(questionId);
+        if (question == null) return NotFound();
+        var result = _mapper.Map<QuestionDTO>(question);
+        return Ok(result);
+    }
+
+    
+    [HttpPost("/[action]")]
     public async Task<IActionResult> AddQuestion([FromBody] QuestionDTO question)
     {
         // var user = await _unitOfWork.Users.GetById(userId);
@@ -78,46 +78,60 @@ public class QuestionController : BaseController
         var result = _mapper.Map<Question>(question);
         await _unitOfWork.Questions.Add(result);
         await _unitOfWork.CompleteAsync();
-        var userDTO = _mapper.Map<UserDTO>(result);
-        return CreatedAtAction(nameof(GetQuestion), routeValues:new {questionBankId = result.QuestionBankId}, value:userDTO);
+        var userDTO = _mapper.Map<Question>(result);
+        return Ok(userDTO);
+        //return CreatedAtAction(nameof(GetQuestion), routeValues:new {questionBankId = result.QuestionBankId}, value:userDTO);
     }
     
 
     [HttpDelete]
-    [Route("DeleteQuestion")]
+    [Route("/DeleteQuestion")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> DeleteQuestion(int userId, Guid questionBankId,int questionId)
+    public async Task<IActionResult> DeleteQuestion(int id)
     {
-        var user = await _unitOfWork.Users.GetById(userId);
-        if (user == null || user.QuestionBankInteract.QuestionBanks == null) return NotFound();
-        var questionBank = user.QuestionBankInteract.QuestionBanks.FirstOrDefault(x => x.Id == questionBankId);
-        if (questionBank == null || questionBank.Questions == null) return NotFound();
-        var question = questionBank.Questions.FirstOrDefault(x => x.Id == questionId);
-        if (question == null) return NotFound();
-
-        // Remove the question from the question bank
-        questionBank.Questions.Remove(question);
-
-        // Save the changes to the database
+        var question = await _unitOfWork.Questions.GetById(id);
+        if(question == null) return NotFound();
+        await _unitOfWork.Questions.Delete(question);
         await _unitOfWork.CompleteAsync();
-
-        // Return a response indicating success
         return NoContent();
     }
 
     [HttpPut]
-    [Route("UpdateQuestion")]
+    [Route("/UpdateQuestion")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> UpdateQuestion(int userId, Guid questionBankId, Question question)
+    // public async Task<IActionResult> UpdateQuestion([FromQuery] int userId, [FromQuery] int questionBankId,[FromBody] Question question)
+    // //Guid questionBankId
+    // {
+    //     var user = await _unitOfWork.Users.GetById(userId);
+    //     if (user == null || user.QuestionBankInteract == null || user.QuestionBankInteract.QuestionBanks == null) return NotFound();
+    //     var questionBank = user.QuestionBankInteract.QuestionBanks.FirstOrDefault(x => x.Id == questionBankId);
+    //     if (questionBank == null || questionBank.Questions == null) return NotFound();
+    //     if (question == null) return NotFound();
+    //     var existedQuestion = await _unitOfWork.Questions.GetById(question.Id);
+    //     if(existedQuestion == null) return NotFound();
+    //     await _unitOfWork.Questions.Update(question);
+    //     await _unitOfWork.CompleteAsync();
+
+    //     return NoContent();
+    // }
+    public async Task<IActionResult> UpdateQuestion(int id,[FromBody] QuestionDTO question)
     {
-        var user = await _unitOfWork.Users.GetById(userId);
-        if (user == null || user.QuestionBankInteract == null || user.QuestionBankInteract.QuestionBanks == null) return NotFound();
-        var questionBank = user.QuestionBankInteract.QuestionBanks.FirstOrDefault(x => x.Id == questionBankId);
-        if (questionBank == null || questionBank.Questions == null) return NotFound();
-        if (question == null) return NotFound();
-        var existedQuestion = await _unitOfWork.Questions.GetById(question.Id);
-        if(existedQuestion == null) return NotFound();
-        await _unitOfWork.Questions.Update(question);
+        if(!ModelState.IsValid)
+            return BadRequest();
+        var result = await _unitOfWork.Questions.GetById(id);
+        if (result == null) 
+            return NotFound();
+        var editQuestion = _mapper.Map<Question>(question);
+        if(editQuestion == null) return NotFound();
+
+        result.QuestionName = editQuestion.QuestionName;
+        result.ChoicesString = editQuestion.ChoicesString;
+        result.Type = editQuestion.Type;
+        result.AnswersString = editQuestion.AnswersString;
+        result.Score = editQuestion.Score;
+        //result.QuestionBankId = editQuestion.QuestionBankId;
+
+        await _unitOfWork.Questions.Update(result);
         await _unitOfWork.CompleteAsync();
 
         return NoContent();

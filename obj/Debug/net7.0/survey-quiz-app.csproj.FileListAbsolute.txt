@@ -80,3 +80,9 @@ E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\b
 E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer.dll
 E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\Asp.Versioning.Abstractions.dll
 E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\Asp.Versioning.Http.dll
+E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\System.Web.Cors.dll
+E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\System.Net.Http.Formatting.dll
+E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\System.Web.Http.dll
+E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\System.Web.Http.Cors.dll
+E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\Newtonsoft.Json.dll
+E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll

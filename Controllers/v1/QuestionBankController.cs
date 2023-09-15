@@ -10,7 +10,8 @@ using survey_quiz_app.Models;
 namespace survey_quiz_app.Controllers.v1;
 
 [ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
+// [Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/[controller]")]
 [ApiVersion("1.0")]
 // [ApiVersion("1.0", Deprecated = true)] // Use for warning the version not supported much longer
 public class QuestionBankController : BaseController
@@ -20,7 +21,7 @@ public class QuestionBankController : BaseController
     {
 
     }
-    [HttpGet("GetQuestionBank")]
+    [HttpGet("/GetQuestionBank")]
     public async Task<IActionResult> Get()
     {
         // if(await _unitOfWork.QuestionBanks.All() == null) return NotFound();
@@ -28,80 +29,127 @@ public class QuestionBankController : BaseController
 
         if(await _unitOfWork.QuestionBanks.All() == null) return NotFound("Users not found");
         var result = _mapper.Map<List<QuestionBankDTO>>(await _unitOfWork.QuestionBanks.All());
+        
         return Ok(result);
     }
 
-    //Default Version (Version 1.0)
-
     [HttpGet]
-    [Route("User/{userId}/GetQuestionBank/{questionBankId}")]
+    [Route("/Category/{categoryId}/GetQuestionBank")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> Get(int userId, Guid questionBankId)
+    public async Task<IActionResult> GetQuestionBankByCategory(int categoryId) //Guid questionBankId
     {
-        var user = await _unitOfWork.Users.GetById(userId);
-        if (user == null || user.QuestionBankInteract == null || user.QuestionBankInteract.QuestionBanks == null) return NotFound();
-        // var questionBank = await _unitOfWork.QuestionBanks.GetById(questionBankId);
-        var questionBank = user.QuestionBankInteract.QuestionBanks.FirstOrDefault(x => x.Id == questionBankId);
-        if (questionBank == null) return NotFound();
+        var category = await _unitOfWork.CategoryLists.GetById(categoryId);
+        if (category == null || category.QuestionBanks == null) return NotFound();
+        var questionBank = category.QuestionBanks;
+        
         return Ok(questionBank);
     }
-
-    [HttpPost]
-    [Route("AddQuestionBank")]
+    [HttpGet]
+    [Route("/GetSurveyCode")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> AddQuestionBank(QuestionBank questionBank)
+    public async Task<IActionResult> GetSurveyCode() //Guid questionBankId
     {
-        await _unitOfWork.QuestionBanks.Add(questionBank);
-        await _unitOfWork.CompleteAsync();
-        return Ok("Question bank added successfully.");
-        // Create a new QuestionBank object from the QuestionBankDTO
-        // var questionBank = new QuestionBank
-        // {
-        //     SurveyCode = questionBankDTO.SurveyCode,
-        //     SurveyName = questionBankDTO.SurveyName,
-        //     Owner = questionBankDTO.Owner,
-        //     Category = questionBankDTO.Category,
-        //     Timer = questionBankDTO.Timer,
-        //     StartDate = questionBankDTO.StartDate,
-        //     EndDate = questionBankDTO.EndDate,
-        //     Status = questionBankDTO.Status,
-        //     EnableStatus = questionBankDTO.EnableStatus,
-        //     ResultScores = questionBankDTO.ResultScores,
-        //     Questions = questionBankDTO.Questions
-        // };
-
-        // // Add the new QuestionBank to the database
-        // await _unitOfWork.QuestionBanks.Add(questionBank);
-        // await _unitOfWork.CompleteAsync();
-
-        // // Retrieve the generated ID from the database
-        // var generatedId = questionBank.Id;
-
-        // // Create a new QuestionBankDTO object with the generated ID and other properties
-        // var newQuestionBankDTO = new CreateQuestionBankDTO
-        // {
-        //     Id = generatedId,
-        //     SurveyCode = questionBank.SurveyCode,
-        //     SurveyName = questionBank.SurveyName,
-        //     Owner = questionBank.Owner,
-        //     Category = questionBank.Category,
-        //     Timer = questionBank.Timer,
-        //     StartDate = questionBank.StartDate,
-        //     EndDate = questionBank.EndDate,
-        //     Status = questionBank.Status,
-        //     EnableStatus = questionBank.EnableStatus,
-        //     ResultScores = questionBank.ResultScores,
-        //     Questions = questionBank.Questions
-        // };
-
-        // // Return the new QuestionBankDTO to the client
-        // return Ok(newQuestionBankDTO);
+        // var questionBankInteracts = await _unitOfWork.QuestionBankInteracts.GetAllByUser(userId);
+        // var questionBankIds = questionBankInteracts.Select(q => q?.QuestionBankId).Distinct().ToList();
+        // var questionBanks = await _unitOfWork.QuestionBanks.GetByUser(questionBankIds);
+        // if (questionBanks == null) return NotFound("There is no questionBanks with this UserId");
+        // var surveyCodes = questionBanks.Select(q => q?.SurveyCode).Distinct().ToList();
+        var questionBanks = await _unitOfWork.QuestionBanks.All();
+        var surveyCodes = questionBanks.Select(q => q?.SurveyCode).Distinct().ToList();
+        return Ok(surveyCodes);
     }
 
-    [HttpDelete]
-    [Route("DeleteQuestionBank")]
+    [HttpGet]
+    [Route("/User/{userId}/GetQuestionBank")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> DeleteQuestionBank(Guid id)
+    public async Task<IActionResult> GetQuestionBankByUser(int userId) //Guid questionBankId
+    {
+        var questionBankInteracts = await _unitOfWork.QuestionBankInteracts.GetAllByUser(userId);
+        var questionBankIds = questionBankInteracts.Select(q => q?.QuestionBankId).Distinct().ToList();
+        var questionBanks = await _unitOfWork.QuestionBanks.GetByUser(questionBankIds);
+        if (questionBanks == null) return NotFound("There is no questionBanks with this UserId");
+        var questionBankDTOs = _mapper.Map<List<QuestionBankDTO>>(questionBanks);
+        return Ok(questionBankDTOs);
+    }
+
+    [HttpGet]
+    [Route("/User/{userId}/Category/{categoryId}/GetQuestionBank")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetQuestionBankByUser(int userId, int categoryId) //Guid questionBankId
+    {
+        var questionBankInteracts = await _unitOfWork.QuestionBankInteracts.GetAllByUser(userId);
+        var questionBankIds = questionBankInteracts.Select(q => q?.QuestionBankId).Distinct().ToList();
+        var questionBanks = await _unitOfWork.QuestionBanks.GetByUserAndCategory(questionBankIds, categoryId);
+        if (questionBanks == null) return NotFound("There is no questionBanks with this UserId and categoryId");
+        var questionBankDTOs = _mapper.Map<List<QuestionBankDTO>>(questionBanks);
+        return Ok(questionBankDTOs);
+    }
+
+    [HttpGet]
+    [Route("/GetQuestionBank/{questionBankId}")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetOneById(int questionBankId) //Guid questionBankId
+    {
+        var questionBank = await _unitOfWork.QuestionBanks.GetById(questionBankId);
+        if (questionBank == null) return NotFound();
+        var result = _mapper.Map<QuestionBankDTO>(questionBank);
+        var questions = await _unitOfWork.Questions.GetAllByQuestionBankId(questionBankId);
+        if (questions == null) return Ok(result);
+        var questionDTOs = _mapper.Map<List<QuestionDTO>>(questions);
+        result.QuestionDTOs = questionDTOs;
+        return Ok(result);
+    }
+
+    
+
+    [HttpPost]
+    [Route("/AddQuestionBank")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> AddQuestionBank([FromBody] QuestionBankDTO questionBank)
+    {
+        // await _unitOfWork.QuestionBanks.Add(questionBank);
+        // await _unitOfWork.CompleteAsync();
+        // return Ok("Question bank added successfully.");
+
+        if(!ModelState.IsValid)
+            return BadRequest();
+        var resultQuestion = _mapper.Map<List<Question>>(questionBank.QuestionDTOs);
+        var result = _mapper.Map<QuestionBank>(questionBank);
+
+        await _unitOfWork.QuestionBanks.Add(result);
+        await _unitOfWork.CompleteAsync();
+
+        resultQuestion.ForEach(x => x.QuestionBankId = result.Id);
+        await _unitOfWork.Questions.AddRange(resultQuestion);
+        await _unitOfWork.CompleteAsync();
+        var questionBankDTO = _mapper.Map<QuestionBankDTO>(result);
+        questionBankDTO.QuestionDTOs = _mapper.Map<List<QuestionDTO>>(resultQuestion);
+        return Ok(questionBankDTO);
+    }
+
+    // [HttpPost]
+    // [Route("AddQuestionBank/AddQuestions")]
+    // [MapToApiVersion("1.0")]
+    // public async Task<IActionResult> AddQuestionBankWithQuestions([FromBody] QuestionBankDTO questionBank)
+    // {
+
+    //     if(!ModelState.IsValid)
+    //         return BadRequest();
+    //     var result = _mapper.Map<QuestionBank>(questionBank);
+    //     await _unitOfWork.QuestionBanks.Add(result);
+    //     await _unitOfWork.CompleteAsync();
+    //     // var resultQuestion = _mapper.Map<List<Question>>(listQuestion);
+    //     // resultQuestion.ForEach(x => x.Id = result.Id);
+    //     // await _unitOfWork.Questions.AddRange(resultQuestion);
+    //     // await _unitOfWork.CompleteAsync();
+    //     // var rs = _mapper.Map<List<QuestionBankDTO>>(resultQuestion);
+    //     return Ok(result);
+    // }
+
+    [HttpDelete]
+    [Route("/DeleteQuestionBank")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> DeleteQuestionBank(int id) //Guid id
     {
         var questionBank = await _unitOfWork.QuestionBanks.GetById(id);
         if(questionBank == null) return NotFound();
@@ -111,13 +159,39 @@ public class QuestionBankController : BaseController
     }
 
     [HttpPut]
-    [Route("UpdateQuestionBank")]
+    [Route("/UpdateQuestionBank")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> UpdateQuestionBank(QuestionBank questionBank)
+    // public async Task<IActionResult> UpdateQuestionBank(QuestionBank questionBank)
+    // {
+    //     var existedQuestionBank = await _unitOfWork.QuestionBanks.GetById(questionBank.Id);
+    //     if(existedQuestionBank == null) return NotFound();
+    //     await _unitOfWork.QuestionBanks.Update(questionBank);
+    //     await _unitOfWork.CompleteAsync();
+
+    //     return NoContent();
+    // }
+    public async Task<IActionResult> UpdateQuestionBank(int id,[FromBody] QuestionBankDTO questionBank)
     {
-        var existedQuestionBank = await _unitOfWork.QuestionBanks.GetById(questionBank.Id);
-        if(existedQuestionBank == null) return NotFound();
-        await _unitOfWork.QuestionBanks.Update(questionBank);
+        if(!ModelState.IsValid)
+            return BadRequest();
+        var result = await _unitOfWork.QuestionBanks.GetById(id);
+        if (result == null) 
+            return NotFound();
+        var editQuestionBank = _mapper.Map<QuestionBank>(questionBank);
+        if(editQuestionBank == null) return NotFound();
+
+        result.SurveyCode = editQuestionBank.SurveyCode;
+        result.SurveyName = editQuestionBank.SurveyName;
+        result.Owner = editQuestionBank.Owner;
+        result.Category = editQuestionBank.Category;
+        result.Timer = editQuestionBank.Timer;
+        result.StartDate = editQuestionBank.StartDate;
+        result.EndDate = editQuestionBank.EndDate;
+        result.Status = editQuestionBank.Status;
+        result.EnableStatus = editQuestionBank.EnableStatus;
+        result.CategoryListId = editQuestionBank.CategoryListId;
+
+        await _unitOfWork.QuestionBanks.Update(result);
         await _unitOfWork.CompleteAsync();
 
         return NoContent();

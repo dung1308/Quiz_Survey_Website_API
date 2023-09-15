@@ -6,5 +6,7 @@ namespace survey_quiz_app.DTO.Outgoing;
 
 public class ResultShowDTOResponse
 {
-    public double? OnAnswer { get; set; }
+    public IEnumerable<string> OnAnswers;
+
+    public double? ResultScore { get; set; }
 }

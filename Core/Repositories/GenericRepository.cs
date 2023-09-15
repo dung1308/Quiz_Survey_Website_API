@@ -22,6 +22,13 @@ public class GenericRepository<T,TID> : IGenericRepository<T,TID> where T : clas
         return true;
     }
 
+    public virtual async Task<bool> AddRange(List<T> entity)
+    {
+        
+        await _dbSet.AddRangeAsync(entity);
+        return true;
+    }
+
     public virtual async Task<IEnumerable<T>> All()
     {
         return await _dbSet.AsNoTracking().ToListAsync();

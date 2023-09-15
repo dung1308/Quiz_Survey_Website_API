@@ -25,7 +25,6 @@ public class QuestionRepository : GenericRepository<Question, int>, IQuestionRep
         }
     }
 
-
     public override async Task<Question?> GetById(int id)
     {
         try
@@ -52,5 +51,11 @@ public class QuestionRepository : GenericRepository<Question, int>, IQuestionRep
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    public async Task<IEnumerable<Question?>> GetAllByQuestionBankId(int questionBankId)
+    {
+        var questions = await _context.Questions.Where(q => q.QuestionBankId == questionBankId).ToListAsync();
+        return questions;
     }
 }

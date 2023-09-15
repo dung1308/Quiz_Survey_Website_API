@@ -7,9 +7,9 @@ using survey_quiz_app.Models;
 
 namespace survey_quiz_app.QuestionMapperProfile;
 
-public class AutoMapperProfile : Profile
+public class RequestToDomain : Profile
 {
-    public AutoMapperProfile()
+    public RequestToDomain()
     {
         // CreateMap<User, UserDTO>()
         // // .ForMember(dest => dest.Id,
@@ -26,10 +26,15 @@ public class AutoMapperProfile : Profile
         CreateMap<UserDTO, User>()
         .ForMember(dest => dest.UserName,
         opt => opt.MapFrom(src => src.UserName))
+        .ForMember(dest => dest.UserName,
+        opt => opt.MapFrom(src => src.UserName))
         .ForMember(dest => dest.Password,
         opt => opt.MapFrom(src => src.Password))
         .ForMember(dest => dest.Email,
-        opt => opt.MapFrom(src => src.Email));
+        opt => opt.MapFrom(src => src.Email))
+        .ForMember(dest => dest.RoleId,
+        opt => opt.MapFrom(src => src.RoleId))
+        .ReverseMap();
 
         // CreateMap<CategoryList, CategoryListDTO>()
         // .ForMember(dest => dest.CategoryName,
@@ -37,7 +42,8 @@ public class AutoMapperProfile : Profile
 
         CreateMap<CategoryListDTO, CategoryList>()
         .ForMember(dest => dest.CategoryName,
-        opt => opt.MapFrom(src => src.CategoryName));
+        opt => opt.MapFrom(src => src.CategoryName))
+        .ReverseMap();
 
         // CreateMap<Question, QuestionDTO>()
         // .ForMember(dest => dest.QuestionName,
@@ -56,16 +62,13 @@ public class AutoMapperProfile : Profile
         CreateMap<QuestionDTO, Question>()
         .ForMember(dest => dest.QuestionName,
         opt => opt.MapFrom(src => src.QuestionName))
-        .ForMember(dest => dest.ChoicesString,
-        opt => opt.MapFrom(src => src.ChoicesString))
+
         .ForMember(dest => dest.Type,
         opt => opt.MapFrom(src => src.Type))
-        .ForMember(dest => dest.AnswersString,
-        opt => opt.MapFrom(src => src.AnswersString))
-        .ForMember(dest => dest.OnAnswersString,
-        opt => opt.MapFrom(src => src.OnAnswersString))
+
         .ForMember(dest => dest.Score,
-        opt => opt.MapFrom(src => src.Score));
+        opt => opt.MapFrom(src => src.Score))
+        .ReverseMap();
 
         // CreateMap<QuestionBank, QuestionBankDTO>()
         // .ForMember(dest => dest.SurveyCode,
@@ -106,15 +109,17 @@ public class AutoMapperProfile : Profile
         .ForMember(dest => dest.Status,
         opt => opt.MapFrom(src => src.Status))
         .ForMember(dest => dest.EnableStatus,
-        opt => opt.MapFrom(src => src.EnableStatus));
+        opt => opt.MapFrom(src => src.EnableStatus))
+        .ReverseMap();
 
         // CreateMap<ResultShow, ResultShowDTO>()
         // .ForMember(dest => dest.OnAnswer,
         // opt => opt.MapFrom(src => src.OnAnswer));
 
         CreateMap<ResultShowDTO, ResultShow>()
-        .ForMember(dest => dest.OnAnswer,
-        opt => opt.MapFrom(src => src.OnAnswer));
+        .ForMember(dest => dest.ResultScore,
+        opt => opt.MapFrom(src => src.ResultScore))
+        .ReverseMap();
 
         // CreateMap<Role, RoleDTO>()
         // .ForMember(dest => dest.RoleName,
@@ -126,14 +131,14 @@ public class AutoMapperProfile : Profile
         .ForMember(dest => dest.RoleName,
         opt => opt.MapFrom(src => src.RoleName))
         .ForMember(dest => dest.Permission,
-        opt => opt.MapFrom(src => src.Permission));
+        opt => opt.MapFrom(src => src.Permission))
+        .ReverseMap();
 
         // CreateMap<QuestionBankInteract, QuestionBankInteractDTO>()
         // .ForMember(dest => dest.ResultScores,
         // opt => opt.MapFrom(src => src.ResultScores));
 
         CreateMap<QuestionBankInteractDTO, QuestionBankInteract>()
-        .ForMember(dest => dest.ResultScores,
-        opt => opt.MapFrom(src => src.ResultScores));
+        .ReverseMap();
     }
 }

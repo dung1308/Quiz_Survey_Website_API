@@ -9,7 +9,8 @@ using survey_quiz_app.Models;
 namespace survey_quiz_app.Controllers.v1;
 
 [ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
+// [Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/[controller]")]
 [ApiVersion("1.0")]
 
 public class BaseController : ControllerBase

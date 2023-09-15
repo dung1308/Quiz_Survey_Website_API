@@ -51,8 +51,8 @@ public class DomainToResponse : Profile
         opt => opt.MapFrom(src => src.EnableStatus));
 
         CreateMap<ResultShow, ResultShowDTOResponse>()
-        .ForMember(dest => dest.OnAnswer,
-        opt => opt.MapFrom(src => src.OnAnswer));
+        .ForMember(dest => dest.ResultScore,
+        opt => opt.MapFrom(src => src.ResultScore));
 
         CreateMap<Role, RoleDTOResponse>()
         .ForMember(dest => dest.RoleName,
@@ -60,8 +60,6 @@ public class DomainToResponse : Profile
         .ForMember(dest => dest.Permission,
         opt => opt.MapFrom(src => src.Permission));
 
-        CreateMap<QuestionBankInteract, QuestionBankInteractDTOResponse>()
-        .ForMember(dest => dest.ResultScores,
-        opt => opt.MapFrom(src => src.ResultScores));
+        CreateMap<QuestionBankInteract, QuestionBankInteractDTOResponse>();
     }
 }

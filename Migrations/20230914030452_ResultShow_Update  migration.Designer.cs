@@ -12,8 +12,8 @@ using survey_quiz_app.Data;
 namespace survey_quiz_app.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230911084748_Initial migration")]
-    partial class Initialmigration
+    [Migration("20230914030452_ResultShow_Update  migration")]
+    partial class ResultShow_Updatemigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,13 +61,8 @@ namespace survey_quiz_app.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("OnAnswersString")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid?>("QuestionBankId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("QuestionBankId")
+                        .HasColumnType("int");
 
                     b.Property<string>("QuestionName")
                         .IsRequired()
@@ -90,10 +85,11 @@ namespace survey_quiz_app.Migrations
 
             modelBuilder.Entity("survey_quiz_app.Models.QuestionBank", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Category")
                         .HasMaxLength(100)
@@ -112,9 +108,6 @@ namespace survey_quiz_app.Migrations
                     b.Property<string>("Owner")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("QuestionBankInteractId")
-                        .HasColumnType("int");
 
                     b.Property<string>("StartDate")
                         .HasMaxLength(100)
@@ -141,8 +134,6 @@ namespace survey_quiz_app.Migrations
 
                     b.HasIndex("CategoryListId");
 
-                    b.HasIndex("QuestionBankInteractId");
-
                     b.HasIndex("SurveyCode")
                         .IsUnique();
 
@@ -157,10 +148,20 @@ namespace survey_quiz_app.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("QuestionBankId")
+                        .HasColumnType("int");
+
                     b.Property<double?>("ResultScores")
                         .HasColumnType("float");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("QuestionBankId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("QuestionBankInteracts");
                 });
@@ -173,14 +174,19 @@ namespace survey_quiz_app.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double?>("OnAnswer")
-                        .HasColumnType("float");
+                    b.Property<string>("OnAnswersString")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int?>("QuestionBankInteractId")
                         .HasColumnType("int");
 
                     b.Property<int?>("QuestionId")
                         .HasColumnType("int");
+
+                    b.Property<double?>("ResultScore")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -229,9 +235,6 @@ namespace survey_quiz_app.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("QuestionBankInteractId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("RoleId")
                         .HasColumnType("int");
 
@@ -241,10 +244,6 @@ namespace survey_quiz_app.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("QuestionBankInteractId")
-                        .IsUnique()
-                        .HasFilter("[QuestionBankInteractId] IS NOT NULL");
 
                     b.HasIndex("RoleId");
 
@@ -266,37 +265,44 @@ namespace survey_quiz_app.Migrations
                         .WithMany("QuestionBanks")
                         .HasForeignKey("CategoryListId");
 
-                    b.HasOne("survey_quiz_app.Models.QuestionBankInteract", null)
-                        .WithMany("QuestionBanks")
-                        .HasForeignKey("QuestionBankInteractId");
-
                     b.Navigation("CategoryList");
+                });
+
+            modelBuilder.Entity("survey_quiz_app.Models.QuestionBankInteract", b =>
+                {
+                    b.HasOne("survey_quiz_app.Models.QuestionBank", "QuestionBank")
+                        .WithMany("QuestionBankInteract")
+                        .HasForeignKey("QuestionBankId");
+
+                    b.HasOne("survey_quiz_app.Models.User", "User")
+                        .WithMany("QuestionBankInteracts")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("QuestionBank");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("survey_quiz_app.Models.ResultShow", b =>
                 {
-                    b.HasOne("survey_quiz_app.Models.QuestionBankInteract", null)
+                    b.HasOne("survey_quiz_app.Models.QuestionBankInteract", "QuestionBankInteract")
                         .WithMany("ResultShows")
                         .HasForeignKey("QuestionBankInteractId");
 
                     b.HasOne("survey_quiz_app.Models.Question", "Question")
-                        .WithMany()
+                        .WithMany("ResultShows")
                         .HasForeignKey("QuestionId");
 
                     b.Navigation("Question");
+
+                    b.Navigation("QuestionBankInteract");
                 });
 
             modelBuilder.Entity("survey_quiz_app.Models.User", b =>
                 {
-                    b.HasOne("survey_quiz_app.Models.QuestionBankInteract", "QuestionBankInteract")
-                        .WithOne("User")
-                        .HasForeignKey("survey_quiz_app.Models.User", "QuestionBankInteractId");
-
                     b.HasOne("survey_quiz_app.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
-
-                    b.Navigation("QuestionBankInteract");
 
                     b.Navigation("Role");
                 });
@@ -306,23 +312,31 @@ namespace survey_quiz_app.Migrations
                     b.Navigation("QuestionBanks");
                 });
 
+            modelBuilder.Entity("survey_quiz_app.Models.Question", b =>
+                {
+                    b.Navigation("ResultShows");
+                });
+
             modelBuilder.Entity("survey_quiz_app.Models.QuestionBank", b =>
                 {
+                    b.Navigation("QuestionBankInteract");
+
                     b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("survey_quiz_app.Models.QuestionBankInteract", b =>
                 {
-                    b.Navigation("QuestionBanks");
-
                     b.Navigation("ResultShows");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("survey_quiz_app.Models.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("survey_quiz_app.Models.User", b =>
+                {
+                    b.Navigation("QuestionBankInteracts");
                 });
 #pragma warning restore 612, 618
         }

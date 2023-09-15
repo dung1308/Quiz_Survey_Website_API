@@ -37,6 +37,20 @@ builder.Services.AddVersionedApiExplorer(options => {
     options.SubstituteApiVersionInUrl = true;
 });
 
+// Add CORS for allow API to connect
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+    policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+    });
+}
+);
+
 var app = builder.Build();
 // var versionSet = app.NewApiVersionSet()
 //                     .HasApiVersion(1)
@@ -55,5 +69,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.Run();
