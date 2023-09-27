@@ -5,7 +5,7 @@ namespace survey_quiz_app.Data;
 
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
-    private readonly ApiDbContext _context;
+    public ApiDbContext Context {get;set;}
 
 
     public IQuestionBankRepository QuestionBanks { get; private set; }
@@ -24,27 +24,27 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 
     public UnitOfWork(ApiDbContext context, ILoggerFactory loggerFactory)
     {
-        _context = context;
+        Context = context;
         var _logger = loggerFactory.CreateLogger(categoryName: "logs");
 
-        QuestionBanks = new QuestionBankRepository(_context, _logger);
-        // Users = new UserRepository(_context, _logger); // Error ????
-        Users = new UserRepository(_context, _logger);
-        Questions = new QuestionRepository(_context, _logger);
-        CategoryLists = new CategoryRepository(_context, _logger);
-        Roles = new RoleRepository(_context, _logger);
-        QuestionBankInteracts = new QuestionBankInteractRepository(_context, _logger);
-        ResultShows = new ResultShowRepository(_context, _logger);
+        QuestionBanks = new QuestionBankRepository(Context, _logger);
+        // Users = new UserRepository(Context, _logger); // Error ????
+        Users = new UserRepository(Context, _logger);
+        Questions = new QuestionRepository(Context, _logger);
+        CategoryLists = new CategoryRepository(Context, _logger);
+        Roles = new RoleRepository(Context, _logger);
+        QuestionBankInteracts = new QuestionBankInteractRepository(Context, _logger);
+        ResultShows = new ResultShowRepository(Context, _logger);
     }
 
 
     public async Task CompleteAsync()
     {
-        await _context.SaveChangesAsync();
+        await Context.SaveChangesAsync();
     }
 
     public void Dispose()
     {
-        _context.Dispose();
+        Context.Dispose();
     }
 }

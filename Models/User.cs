@@ -8,9 +8,11 @@ public class User
 {
     [Key]
     public int Id { get; set; }
-    [StringLength(100)]
+    [StringLength(1000)]
     public string UserName { get; set; } = string.Empty;
+    [StringLength(1000)]
     public string Password { get; set; } = string.Empty;
+    [StringLength(1000)]
     public string Email { get; set; } = string.Empty;
 
     public int? RoleId { get; set; }

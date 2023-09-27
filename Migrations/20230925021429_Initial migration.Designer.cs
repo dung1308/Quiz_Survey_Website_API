@@ -12,8 +12,8 @@ using survey_quiz_app.Data;
 namespace survey_quiz_app.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230914030452_ResultShow_Update  migration")]
-    partial class ResultShow_Updatemigration
+    [Migration("20230925021429_Initial migration")]
+    partial class Initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,12 +91,14 @@ namespace survey_quiz_app.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<int?>("CategoryListId")
                         .HasColumnType("int");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DateTimeNow")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("EnableStatus")
                         .HasColumnType("bit");
@@ -291,7 +293,8 @@ namespace survey_quiz_app.Migrations
 
                     b.HasOne("survey_quiz_app.Models.Question", "Question")
                         .WithMany("ResultShows")
-                        .HasForeignKey("QuestionId");
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Question");
 

@@ -27,6 +27,11 @@ public class ApiDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Question>()
+            .HasMany(c => c.ResultShows)
+            .WithOne(cl => cl.Question)
+            .HasForeignKey(c => c.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
         // base.OnModelCreating(modelBuilder);
         // modelBuilder.Entity<QuestionBank>(entity =>
         //     entity.Property(x => x.Id)

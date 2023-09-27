@@ -98,8 +98,6 @@ public class RequestToDomain : Profile
         opt => opt.MapFrom(src => src.SurveyName))
         .ForMember(dest => dest.Owner,
         opt => opt.MapFrom(src => src.Owner))
-        .ForMember(dest => dest.Category,
-        opt => opt.MapFrom(src => src.Category))
         .ForMember(dest => dest.Timer,
         opt => opt.MapFrom(src => src.Timer))
         .ForMember(dest => dest.StartDate,
@@ -110,6 +108,8 @@ public class RequestToDomain : Profile
         opt => opt.MapFrom(src => src.Status))
         .ForMember(dest => dest.EnableStatus,
         opt => opt.MapFrom(src => src.EnableStatus))
+        .ForMember(dest => dest.Questions,
+        opt => opt.MapFrom(src => src.QuestionDTOs))
         .ReverseMap();
 
         // CreateMap<ResultShow, ResultShowDTO>()
@@ -139,6 +139,8 @@ public class RequestToDomain : Profile
         // opt => opt.MapFrom(src => src.ResultScores));
 
         CreateMap<QuestionBankInteractDTO, QuestionBankInteract>()
+        .ForMember(dest => dest.ResultShows,
+        opt => opt.MapFrom(src => src.ResultShowDTOs))
         .ReverseMap();
     }
 }

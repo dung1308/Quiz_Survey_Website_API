@@ -37,8 +37,6 @@ public class DomainToResponse : Profile
         opt => opt.MapFrom(src => src.SurveyName))
         .ForMember(dest => dest.Owner,
         opt => opt.MapFrom(src => src.Owner))
-        .ForMember(dest => dest.Category,
-        opt => opt.MapFrom(src => src.Category))
         .ForMember(dest => dest.Timer,
         opt => opt.MapFrom(src => src.Timer))
         .ForMember(dest => dest.StartDate,

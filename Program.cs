@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using survey_quiz_app.Core;
 using survey_quiz_app.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

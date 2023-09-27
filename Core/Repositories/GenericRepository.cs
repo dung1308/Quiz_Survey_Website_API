@@ -22,6 +22,12 @@ public class GenericRepository<T,TID> : IGenericRepository<T,TID> where T : clas
         return true;
     }
 
+    // public virtual async Task<bool> getDateNow(T entity)
+    // {
+    //     await _dbSet.Set<DateTime>().FromSqlRaw("SELECT getDate()").FirstOrDefaultAsync();
+    //     return true;
+    // }
+
     public virtual async Task<bool> AddRange(List<T> entity)
     {
         
@@ -37,6 +43,12 @@ public class GenericRepository<T,TID> : IGenericRepository<T,TID> where T : clas
     public virtual async Task<bool> Delete(T entity)
     {
         _dbSet.Remove(entity);
+        return true;
+    }
+
+    public virtual async Task<bool> DeleteMulti(List<T> entity)
+    {
+        _dbSet.RemoveRange(entity);
         return true;
     }
 

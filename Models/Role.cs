@@ -8,8 +8,9 @@ public class Role
 {
     [Key]
     public int Id { get; set; }
-    [StringLength(100)]
+    [StringLength(1000)]
     public string RoleName { get; set; } = string.Empty; // Role of the user
+    [StringLength(1000)]
     public string Permission { get; set; } = string.Empty; // A permission which permits how far the user can access
     public ICollection<User>? Users { get; set; }
 }

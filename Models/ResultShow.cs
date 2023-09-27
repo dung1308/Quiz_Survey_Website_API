@@ -11,7 +11,7 @@ public class ResultShow
 
 
     private IEnumerable<String>? _onAnswers;
-    [StringLength(500)]
+    [StringLength(1000)]
     [JsonIgnore]
     public string OnAnswersString { get; set; } = string.Empty;
     [NotMapped]

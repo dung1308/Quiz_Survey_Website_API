@@ -8,4 +8,5 @@ public interface IGenericRepository<T,TID> where T : class
     Task<bool> AddRange(List<T> entity);
     Task<bool> Update(T entity);
     Task<bool> Delete(T entity);
+    Task<bool> DeleteMulti(List<T> entity);
 }

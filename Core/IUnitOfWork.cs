@@ -1,9 +1,12 @@
+using survey_quiz_app.Data;
 using survey_quiz_app.Models;
 
 namespace survey_quiz_app.Core;
 
 public interface IUnitOfWork
 {
+    ApiDbContext Context {get;set;}
+
     IQuestionBankRepository QuestionBanks { get; }
     IQuestionRepository Questions { get; }
     IUserRepository Users { get; }

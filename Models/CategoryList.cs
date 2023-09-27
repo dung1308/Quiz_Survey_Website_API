@@ -8,7 +8,7 @@ public class CategoryList
 {
     [Key]
     public int Id { get; set; }
-    [StringLength(100)]
+    [StringLength(1000)]
     public string CategoryName { get; set; } = string.Empty;
     public ICollection<QuestionBank>? QuestionBanks { get; set; }
 }

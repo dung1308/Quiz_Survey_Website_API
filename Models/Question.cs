@@ -8,11 +8,11 @@ public class Question
 {
     [Key]
     public int Id { get; set; }
-    [StringLength(100)]
+    [StringLength(1000)]
     public string QuestionName { get; set; } = string.Empty;
 
     private IEnumerable<String>? _choices;
-    [StringLength(500)]
+    [StringLength(1000)]
     [JsonIgnore]
     public string ChoicesString { get; set; } = string.Empty;
     [NotMapped]
@@ -30,11 +30,11 @@ public class Question
         }
     }
 
-    [StringLength(100)]
+    [StringLength(1000)]
     public string? Type { get; set; }
 
     private IEnumerable<String>? _answers;
-    [StringLength(500)]
+    [StringLength(1000)]
     [JsonIgnore]
     public string AnswersString { get; set; } = string.Empty;
     [NotMapped]

@@ -46,13 +46,14 @@ namespace survey_quiz_app.Migrations
                     SurveyCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SurveyName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Owner = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Timer = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     StartDate = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     EndDate = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Status = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     EnableStatus = table.Column<bool>(type: "bit", nullable: false),
-                    CategoryListId = table.Column<int>(type: "int", nullable: true)
+                    CategoryListId = table.Column<int>(type: "int", nullable: true),
+                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateTimeNow = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -156,7 +157,8 @@ namespace survey_quiz_app.Migrations
                         name: "FK_ResultShows_Questions_QuestionId",
                         column: x => x.QuestionId,
                         principalTable: "Questions",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

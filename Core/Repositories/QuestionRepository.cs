@@ -58,4 +58,10 @@ public class QuestionRepository : GenericRepository<Question, int>, IQuestionRep
         var questions = await _context.Questions.Where(q => q.QuestionBankId == questionBankId).ToListAsync();
         return questions;
     }
+
+    public async Task<List<Question>?> GetManyById(List<int?>? idList)
+    {
+        var questions = await _context.Questions.Where(q => idList.Contains(q.Id)).ToListAsync();
+        return questions;
+    }
 }
