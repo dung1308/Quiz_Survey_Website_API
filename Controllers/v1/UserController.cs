@@ -113,6 +113,35 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet]
+    [Route("/GetUserNames")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetUserNames() //Guid questionBankId
+    {
+        // var questionBankInteracts = await _unitOfWork.QuestionBankInteracts.GetAllByUser(userId);
+        // var questionBankIds = questionBankInteracts.Select(q => q?.QuestionBankId).Distinct().ToList();
+        // var questionBanks = await _unitOfWork.QuestionBanks.GetByUser(questionBankIds);
+        // if (questionBanks == null) return NotFound("There is no questionBanks with this UserId");
+        // var surveyCodes = questionBanks.Select(q => q?.SurveyCode).Distinct().ToList();
+        var users = await _unitOfWork.Users.All();
+        var userNames = users.Select(q => q?.UserName).Distinct().ToList();
+        return Ok(userNames);
+    }
+
+    [HttpPost]
+    [Route("/LoginUser")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> LoginUser(LoginUserDTO loginUser) //Guid questionBankId
+    {
+        var users = await _unitOfWork.Users.All();
+        var usersList = users.ToList();
+        var userNameList = users.Select((e) => e.UserName);
+        if ( !userNameList.Contains(loginUser.UserName)) return NotFound("There is no such username");
+        var user = await _unitOfWork.Users.LoginData(loginUser.UserName);
+        if (user.Password == loginUser.Password) return Ok(user);
+        return NotFound("Wrong Password");
+    }
+
     [HttpPost]
     [Route("/AddUser")]
     [MapToApiVersion("1.0")]
@@ -127,6 +156,27 @@ public class UserController : ControllerBase
         return Ok(userDTO);
         // return CreatedAtAction(nameof(GetUser), routeValues:new {userId = result.Id}, value:userDTO);
     }
+
+    [HttpPost]
+    [Route("/Register")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> Register([FromBody] UserDTO user)
+    {
+        if(!ModelState.IsValid)
+            return BadRequest();
+        var result = _mapper.Map<User>(user);
+        var users = await _unitOfWork.Users.All();
+        var usersList = users.ToList();
+        var userNameList = users.Select((e) => e.UserName);
+        if (userNameList.Contains(result.UserName)) return NotFound("There is a same username");
+        await _unitOfWork.Users.Add(result);
+        await _unitOfWork.CompleteAsync();
+        var userDTO = _mapper.Map<UserDTO>(result);
+        return Ok(userDTO);
+        // return CreatedAtAction(nameof(GetUser), routeValues:new {userId = result.Id}, value:userDTO);
+    }
+
+    
     
 
     [HttpDelete]

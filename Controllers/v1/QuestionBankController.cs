@@ -8,6 +8,7 @@ using survey_quiz_app.Data;
 using survey_quiz_app.DTO.Incoming;
 using survey_quiz_app.Models;
 using System.Data.SqlClient;
+using System.Globalization;
 
 namespace survey_quiz_app.Controllers.v1;
 
@@ -29,7 +30,7 @@ public class QuestionBankController : BaseController
         // if(await _unitOfWork.QuestionBanks.All() == null) return NotFound();
         // return Ok(await _unitOfWork.QuestionBanks.All());
 
-        if(await _unitOfWork.QuestionBanks.All() == null) return NotFound("Users not found");
+        if (await _unitOfWork.QuestionBanks.All() == null) return NotFound("Users not found");
         var result = _mapper.Map<List<QuestionBankDTO>>(await _unitOfWork.QuestionBanks.All());
 
         // Create a connection to the database
@@ -45,8 +46,17 @@ public class QuestionBankController : BaseController
         DateTime resultTime = (DateTime)command.ExecuteScalar();
         connection.Close();
 
-        result.ForEach(e=>{e.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");});
-        
+        result.ForEach(e =>
+        {
+            // if (DateTime.ParseExact(e.StartDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) > resultTime)
+            //     e.Status = "Early";
+            // else if (DateTime.ParseExact(e.EndDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) < resultTime)
+            //     e.Status = "Expired";
+            e.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");
+
+        });
+
+
         return Ok(result);
     }
 
@@ -58,7 +68,7 @@ public class QuestionBankController : BaseController
         var category = await _unitOfWork.CategoryLists.GetById(categoryId);
         if (category == null || category.QuestionBanks == null) return NotFound();
         var questionBank = category.QuestionBanks;
-        
+
         return Ok(questionBank);
     }
     [HttpGet]
@@ -122,9 +132,18 @@ public class QuestionBankController : BaseController
         DateTime resultTime = (DateTime)command.ExecuteScalar();
         connection.Close();
 
-        questionBankDTOs.ForEach(e=>{e.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");});
+        questionBankDTOs.ForEach(e =>
+        {
+            if (DateTime.ParseExact(e.StartDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) > resultTime)
+                e.Status = "Early";
+            else if (DateTime.ParseExact(e.EndDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) < resultTime)
+                e.Status = "Expired";
+            e.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");
 
-        
+            _unitOfWork.QuestionBanks.Update(_mapper.Map<QuestionBank>(e));
+        });
+
+
         return Ok(questionBankDTOs);
     }
 
@@ -152,7 +171,15 @@ public class QuestionBankController : BaseController
         DateTime resultTime = (DateTime)command.ExecuteScalar();
         connection.Close();
 
-        questionBankDTOs.ForEach(e=>{e.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");});
+        questionBankDTOs.ForEach(e =>
+        {
+            if (DateTime.ParseExact(e.StartDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) > resultTime)
+                e.Status = "Early";
+            else if (DateTime.ParseExact(e.EndDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) < resultTime)
+                e.Status = "Expired";
+            e.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");
+            _unitOfWork.QuestionBanks.Update(_mapper.Map<QuestionBank>(e));
+        });
 
         return Ok(questionBankDTOs);
     }
@@ -183,7 +210,13 @@ public class QuestionBankController : BaseController
         DateTime resultTime = (DateTime)command.ExecuteScalar();
         connection.Close();
 
+        if (DateTime.ParseExact(result.StartDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) > resultTime)
+            result.Status = "Early";
+        else if (DateTime.ParseExact(result.EndDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) < resultTime)
+            result.Status = "Expired";
+
         result.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");
+        // await _unitOfWork.QuestionBanks.Update(_mapper.Map<QuestionBank>(result));
 
         return Ok(result);
     }
@@ -202,7 +235,7 @@ public class QuestionBankController : BaseController
         result.QuestionDTOs = questionDTOs;
 
         var categoryTask = _unitOfWork.CategoryLists.All();
-        
+
         var categories = await categoryTask;
         var filteredCategory = categories.Where(c => c.Id == result.CategoryListId).FirstOrDefault();
         if (filteredCategory == null) return NotFound("Not Found UserId in Users");
@@ -230,7 +263,7 @@ public class QuestionBankController : BaseController
         return Ok(result);
     }
 
-    
+
 
     [HttpPost]
     [Route("/AddQuestionBank")]
@@ -241,13 +274,13 @@ public class QuestionBankController : BaseController
         // await _unitOfWork.CompleteAsync();
         // return Ok("Question bank added successfully.");
 
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest();
         // var resultQuestion = _mapper.Map<List<Question>>(questionBank.QuestionDTOs);
         var result = _mapper.Map<QuestionBank>(questionBank);
 
         var categoryTask = _unitOfWork.CategoryLists.All();
-        
+
         var categories = await categoryTask;
 
         var filteredCategory = categories.Where(c => c.Id == result.CategoryListId).FirstOrDefault();
@@ -269,6 +302,11 @@ public class QuestionBankController : BaseController
 
         result.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");
 
+        if (DateTime.ParseExact(result.StartDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) > resultTime)
+            result.Status = "Early";
+        else if (DateTime.ParseExact(result.EndDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) < resultTime)
+            result.Status = "Expired";
+
         await _unitOfWork.QuestionBanks.Add(result);
         await _unitOfWork.CompleteAsync();
 
@@ -286,7 +324,7 @@ public class QuestionBankController : BaseController
     public async Task<IActionResult> AddQuestionBankAndInteract(int userId, [FromBody] QuestionBankDTO questionBank)
     {
 
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest();
         // var resultQuestion = _mapper.Map<List<Question>>(questionBank.QuestionDTOs);
         var input = _mapper.Map<QuestionBank>(questionBank);
@@ -297,7 +335,7 @@ public class QuestionBankController : BaseController
         input.Owner = filteredUser.UserName;
 
         var categoryTask = _unitOfWork.CategoryLists.All();
-        
+
         var categories = await categoryTask;
         var filteredCategory = categories.Where(c => c.Id == input.CategoryListId).FirstOrDefault();
         if (filteredCategory == null) return NotFound("Not Found UserId in Users");
@@ -317,7 +355,12 @@ public class QuestionBankController : BaseController
         connection.Close();
 
         input.DateTimeNow = resultTime.ToString("MM/dd/yyyyTHH:mm");
-        
+
+        if (DateTime.ParseExact(input.StartDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) > resultTime)
+            input.Status = "Early";
+        else if (DateTime.ParseExact(input.EndDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) < resultTime)
+            input.Status = "Expired";
+
 
 
         await _unitOfWork.QuestionBanks.Add(input);
@@ -331,7 +374,8 @@ public class QuestionBankController : BaseController
         var existedQuestions = questions.Where(q => q.QuestionBankId == input.Id).ToList();
         var questionIdList = existedQuestions.Select(q => q?.Id).Distinct().ToList();
         List<ResultShowDTO> newResultShowList = new List<ResultShowDTO>();
-        foreach (var i in questionIdList){
+        foreach (var i in questionIdList)
+        {
             var newResultShow = new ResultShowDTO
             {
                 QuestionId = i
@@ -343,11 +387,13 @@ public class QuestionBankController : BaseController
         var InteractRS = _mapper.Map<QuestionBankInteract>(newInteract);
         // var resultShowAdd = _mapper.Map<List<Question>>(newResultShowList);
         // newInteract.ResultShowDTOs
-        try{
+        try
+        {
             await _unitOfWork.QuestionBankInteracts.Add(InteractRS);
             await _unitOfWork.CompleteAsync();
         }
-        catch(Exception){
+        catch (Exception)
+        {
             await _unitOfWork.QuestionBanks.Delete(input);
             await _unitOfWork.CompleteAsync();
         }
@@ -384,7 +430,7 @@ public class QuestionBankController : BaseController
     public async Task<IActionResult> DeleteQuestionBank(int id) //Guid id
     {
         var questionBank = await _unitOfWork.QuestionBanks.GetById(id);
-        if(questionBank == null) return NotFound();
+        if (questionBank == null) return NotFound();
         var questions = await _unitOfWork.Questions.All();
         var existedQuestions = questions.ToList().Where(x => x.QuestionBankId == id).ToList();
         if (existedQuestions != null)
@@ -405,7 +451,8 @@ public class QuestionBankController : BaseController
                     {
                         var questionIdList = existedQuestions2.Select(q => q?.Id).Distinct().ToList();
                         List<ResultShow> resultShowList = new List<ResultShow>();
-                        foreach (int i in questionIdList){
+                        foreach (int i in questionIdList)
+                        {
                             var resultShowsAll = await _unitOfWork.ResultShows.All();
                             var resultShowsList = resultShowsAll.ToList();
                             var resultShows = resultShowsList.Where(q => q.QuestionId == i).ToList();
@@ -451,17 +498,17 @@ public class QuestionBankController : BaseController
     [HttpPut]
     [Route("/UpdateQuestionBank")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> UpdateQuestionBank(int id,[FromBody] QuestionBankDTO questionBank)
+    public async Task<IActionResult> UpdateQuestionBank(int id, [FromBody] QuestionBankDTO questionBank)
     {
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest();
         var result = await _unitOfWork.QuestionBanks.GetById(id);
-        if (result == null) 
+        if (result == null)
             return NotFound();
         if (result.Questions != null && questionBank.QuestionDTOs != null)
         {
             var categoryTask = _unitOfWork.CategoryLists.All();
-        
+
             var categories = await categoryTask;
             var filteredCategory = categories.Where(c => c.Id == result.CategoryListId).FirstOrDefault();
             if (filteredCategory == null) return NotFound("Not Found UserId in Users");
@@ -491,7 +538,7 @@ public class QuestionBankController : BaseController
                 if (i == null) continue;
                 int questionId = i;
                 var question = await _unitOfWork.Questions.GetById(questionId);
-                if(question == null) continue;
+                if (question == null) continue;
                 await _unitOfWork.Questions.Delete(question);
                 await _unitOfWork.CompleteAsync();
             }
@@ -503,7 +550,7 @@ public class QuestionBankController : BaseController
 
         }
         var editQuestionBank = _mapper.Map<QuestionBank>(questionBank);
-        if(editQuestionBank == null) return NotFound();
+        if (editQuestionBank == null) return NotFound();
         editQuestionBank.Id = result.Id;
 
         result.SurveyCode = editQuestionBank.SurveyCode;
@@ -522,37 +569,49 @@ public class QuestionBankController : BaseController
 
         return NoContent();
     }
-    
+
 
     [HttpPut]
     [Route("/UpdateEnabledStatus")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> UpdateEnabledStatus(int id,[FromBody] QuestionBankDTO questionBank)
+    public async Task<IActionResult> UpdateEnabledStatus(int id, bool enableStatus)
     {
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest();
         var result = await _unitOfWork.QuestionBanks.GetById(id);
-        if (result == null) 
+        if (result == null)
             return NotFound();
-        var editQuestionBank = _mapper.Map<QuestionBank>(questionBank);
-        if(editQuestionBank == null) return NotFound();
-        editQuestionBank.Id = result.Id;
-
-        result.SurveyCode = editQuestionBank.SurveyCode;
-        result.SurveyName = editQuestionBank.SurveyName;
-        result.Owner = editQuestionBank.Owner;
-        result.Timer = editQuestionBank.Timer;
-        result.StartDate = editQuestionBank.StartDate;
-        result.EndDate = editQuestionBank.EndDate;
-        result.Status = editQuestionBank.Status;
-        result.EnableStatus = editQuestionBank.EnableStatus;
-        result.CategoryListId = editQuestionBank.CategoryListId;
+        result.EnableStatus = enableStatus;
         // result.Questions = editQuestionBank.Questions;
+        if (result.EnableStatus == true) result.Status = "Join";
+        else result.Status = "composing";
 
         await _unitOfWork.QuestionBanks.Update(result);
         await _unitOfWork.CompleteAsync();
 
         return NoContent();
     }
-    
+
+    [HttpPut]
+    [Route("/UpdateStatusAfterJoin")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> UpdateStatusAfterJoin(int userId, int questionBankId)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+        var result = await _unitOfWork.QuestionBanks.GetById(questionBankId);
+        var user = await _unitOfWork.Users.GetById(userId);
+        if (result == null || user == null)
+            return NotFound("QuestionBank or user not Found");
+        if (user.UserName != result.Owner)
+        {
+            result.Status = "Busy";
+            result.EnableStatus = true;
+        }
+        await _unitOfWork.QuestionBanks.Update(result);
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
+    }
+
 }

@@ -43,6 +43,17 @@ public class QuestionBankInteractController : BaseController
     }
 
     [HttpGet]
+    [Route("/User/{userId}/GetQuestionBankInteractByUserDistinct")]
+    public async Task<IActionResult> GetQuestionBankInteractByUserDistinct(int userId) //Guid questionBankId
+    {
+        var questionBankInteracts = await _unitOfWork.QuestionBankInteracts.GetAllByUser(userId);
+        if (questionBankInteracts == null) return NotFound("questionBankInteracts not found");
+        var distinctquestionBankInteracts = questionBankInteracts.GroupBy(i => i.QuestionBankId).Select(g => g.First()).ToList();
+        var result = _mapper.Map<List<QuestionBankInteractDTO>>(distinctquestionBankInteracts);
+        return Ok(result);
+    }
+
+    [HttpGet]
     [Route("/User/{userId}/QuestionBank/{questionBankId}/questionBankInteracts")]
     public async Task<IActionResult> GetQuestionBankInteractByUserAndQuestionBank(int userId, int questionBankId) //Guid questionBankId
     {
@@ -158,7 +169,7 @@ public class QuestionBankInteractController : BaseController
         var scoreList = new List<IDictionary<string, object>>();
         var scoreListNoId = new List<double?>();
         scoreListNoId = questions?.Select(q => q?.Score).ToList();
-        if (questions != null) 
+        if (questions != null)
             scoreList = questions?.Select(q => new Dictionary<string, object> { { "id", q?.Id }, { "score", q?.Score } })
             .Distinct(new DictionaryComparer<string, object>())
             .ToList();
@@ -180,7 +191,7 @@ public class QuestionBankInteractController : BaseController
         result.ResultScores = totalScore;
 
         foreach (var resultShow in resultShows)
-{
+        {
             // Get the index of the corresponding score in the scoreList
             int index = resultShows.IndexOf(resultShow);
 
@@ -190,8 +201,8 @@ public class QuestionBankInteractController : BaseController
         result.ResultShows = resultShows;
         await _unitOfWork.QuestionBankInteracts.Update(result);
         await _unitOfWork.CompleteAsync();
-        
-        
+
+
 
         // List<bool> boolList = new List<bool>();
         // foreach (IDictionary<string, object> dict in correctAnswerList)
@@ -204,7 +215,7 @@ public class QuestionBankInteractController : BaseController
         // var comparisonResult = from correctAnswer in correctAnswerList
         //                        join userAnswer in userAnswerList on correctAnswer.id equals userAnswer.id
         //                        select correctAnswer == userAnswer;
-        
+
         // var matchingAnswers = comparisonResult.ToList();
 
         // var questionBank = await _unitOfWork.Context.QuestionBanks.Include(x => x.Questions).Where(x => x.Id == questionBankInteract.QuestionBankId).FirstOrDefaultAsync();
