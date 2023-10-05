@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using survey_quiz_app.Data;
 using survey_quiz_app.Models;
@@ -62,5 +63,31 @@ public class QuestionBankRepository : GenericRepository<QuestionBank, int>, IQue
     {
         var questionBanks = await _context.QuestionBanks.Where(q => userIdList.Contains(q.Id) && q.CategoryListId == categoryId).ToListAsync();
         return questionBanks;
+    }
+
+    public string? GenerateRandomString(string[] excludedStrings, int length)
+    {
+        const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var result = new StringBuilder();
+        var random = new Random();
+        for (var i = 0; i < length; i++)
+        {
+            char c;
+            do
+            {
+                c = characters[random.Next(characters.Length)];
+            } while (excludedStrings.Contains(result.ToString() + c));
+            result.Append(c);
+        }
+        if (excludedStrings.Contains(result.ToString()))
+            return GenerateRandomString(excludedStrings, length + 1);
+
+        return result.ToString();
+    }
+
+    public async Task<QuestionBank?> GetByUserName(string userName)
+    {
+        var result = await _context.QuestionBanks.Where(r => r.Owner == userName).FirstOrDefaultAsync();
+        return result;
     }
 }

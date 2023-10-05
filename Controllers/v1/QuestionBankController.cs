@@ -71,6 +71,20 @@ public class QuestionBankController : BaseController
 
         return Ok(questionBank);
     }
+
+    [HttpGet]
+    [Route("/GetScoreAndTotalScore")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetScoreAndTotalScore(int questionBankId) //Guid questionBankId
+    {
+        var questionBank = await _unitOfWork.QuestionBanks.GetById(questionBankId);
+        if (questionBank == null || questionBank.Questions == null) return NotFound();
+        var scoreList = questionBank.Questions.Select(q => q.Score);
+        var scoreListWithId = questionBank.Questions.Select(q => new { id = q.Id, score = q.Score }).ToList();
+        var totalScore = scoreList.Sum();
+        var response = new { ScoreList = scoreListWithId, TotalScore = totalScore };
+        return Ok(response);
+    }
     [HttpGet]
     [Route("/GetSurveyCode")]
     [MapToApiVersion("1.0")]
@@ -307,6 +321,12 @@ public class QuestionBankController : BaseController
         else if (DateTime.ParseExact(result.EndDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) < resultTime)
             result.Status = "Expired";
 
+        var questionBanks = await _unitOfWork.QuestionBanks.All();
+        var surveyCodes = questionBanks.Select(q => q?.SurveyCode).Distinct().ToList();
+        var newSurveyCode = _unitOfWork.QuestionBanks.GenerateRandomString(surveyCodes.ToArray(), 10);
+        if (newSurveyCode == null) newSurveyCode = "aaaaaaaaaa";
+        result.SurveyCode = newSurveyCode;
+
         await _unitOfWork.QuestionBanks.Add(result);
         await _unitOfWork.CompleteAsync();
 
@@ -319,9 +339,9 @@ public class QuestionBankController : BaseController
     }
 
     [HttpPost]
-    [Route("/user/{userId}/AddQuestionBankAndInteract")]
+    [Route("/AddQuestionBankAndInteract")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> AddQuestionBankAndInteract(int userId, [FromBody] QuestionBankDTO questionBank)
+    public async Task<IActionResult> AddQuestionBankAndInteract([FromBody] QuestionBankDTO questionBank)
     {
 
         if (!ModelState.IsValid)
@@ -330,7 +350,7 @@ public class QuestionBankController : BaseController
         var input = _mapper.Map<QuestionBank>(questionBank);
         var usersTask = _unitOfWork.Users.All();
         var users = await usersTask;
-        var filteredUser = users.Where(u => u.Id == userId).FirstOrDefault();
+        var filteredUser = users.Where(u => u.Id == questionBank.UserId).FirstOrDefault();
         if (filteredUser == null) return NotFound("Not Found UserId in Users");
         input.Owner = filteredUser.UserName;
 
@@ -361,6 +381,11 @@ public class QuestionBankController : BaseController
         else if (DateTime.ParseExact(input.EndDate, "MM-dd-yyyyTHH:mm", CultureInfo.InvariantCulture) < resultTime)
             input.Status = "Expired";
 
+        var questionBanks = await _unitOfWork.QuestionBanks.All();
+        var surveyCodes = questionBanks.Select(q => q?.SurveyCode).Distinct().ToList();
+        var newSurveyCode = _unitOfWork.QuestionBanks.GenerateRandomString(surveyCodes.ToArray(), 10);
+        if (newSurveyCode == null) newSurveyCode = "aaaaaaaaaa";
+        input.SurveyCode = newSurveyCode;
 
 
         await _unitOfWork.QuestionBanks.Add(input);
@@ -368,7 +393,7 @@ public class QuestionBankController : BaseController
 
         var newInteract = new QuestionBankInteractDTO();
         newInteract.QuestionBankId = input.Id;
-        newInteract.UserId = userId;
+        newInteract.UserId = input.UserId;
         newInteract.ResultScores = 0;
         var questions = await _unitOfWork.Questions.All();
         var existedQuestions = questions.Where(q => q.QuestionBankId == input.Id).ToList();
@@ -552,6 +577,7 @@ public class QuestionBankController : BaseController
         var editQuestionBank = _mapper.Map<QuestionBank>(questionBank);
         if (editQuestionBank == null) return NotFound();
         editQuestionBank.Id = result.Id;
+        var filteredUser = await _unitOfWork.Users.LoginData(editQuestionBank.Owner);
 
         result.SurveyCode = editQuestionBank.SurveyCode;
         result.SurveyName = editQuestionBank.SurveyName;
@@ -563,6 +589,7 @@ public class QuestionBankController : BaseController
         result.EnableStatus = editQuestionBank.EnableStatus;
         result.CategoryListId = editQuestionBank.CategoryListId;
         result.Questions = editQuestionBank.Questions;
+        result.UserId = editQuestionBank.UserId;
 
         await _unitOfWork.QuestionBanks.Update(result);
         await _unitOfWork.CompleteAsync();

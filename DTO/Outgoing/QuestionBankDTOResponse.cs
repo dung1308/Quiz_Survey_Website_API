@@ -16,4 +16,5 @@ public class QuestionBankDTOResponse
     public Boolean EnableStatus { get; set; }
     public string? CategoryName { get; set; }
     public string? DateTimeNow { get; set; }
+    public int? UserId { get; set; }
 }

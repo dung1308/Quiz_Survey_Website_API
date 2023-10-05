@@ -30,6 +30,7 @@ public class QuestionBank
     public int? CategoryListId { get; set; }
     public string? CategoryName { get; set; }
     public string? DateTimeNow { get; set; }
+    public int? UserId { get; set; }
 
     [ForeignKey("CategoryListId")]
     public CategoryList? CategoryList { get; set; }

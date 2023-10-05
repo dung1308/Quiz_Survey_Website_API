@@ -19,6 +19,7 @@ public class QuestionBankDTO
     public int? CategoryListId { get; set; }
     public string? CategoryName { get; set; }
     public string? DateTimeNow { get; set; }
+    public int? UserId { get; set; }
 
     public ICollection<QuestionDTO>? QuestionDTOs { get; set; }
 

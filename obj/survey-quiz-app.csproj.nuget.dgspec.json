@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "e:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj": {}
+    "E:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj": {}
   },
   "projects": {
-    "e:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj": {
+    "E:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "e:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj",
+        "projectUniqueName": "E:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj",
         "projectName": "survey-quiz-app",
-        "projectPath": "e:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj",
+        "projectPath": "E:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "e:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\obj\\",
+        "outputPath": "E:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",

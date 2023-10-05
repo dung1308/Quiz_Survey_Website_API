@@ -1,3 +1,4 @@
+using System.Text;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using survey_quiz_app.Data;
@@ -57,5 +58,25 @@ public class UserRepository : GenericRepository<User, int>, IUserRepository
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    public string? GenerateAnonymousUserString(string[] excludedStrings, int length)
+    {
+        const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var result = new StringBuilder();
+        var random = new Random();
+        for (var i = 0; i < length; i++)
+        {
+            char c;
+            do
+            {
+                c = characters[random.Next(characters.Length)];
+            } while (excludedStrings.Contains(result.ToString() + c));
+            result.Append(c);
+        }
+        if (excludedStrings.Contains(result.ToString()))
+            return GenerateAnonymousUserString(excludedStrings, length + 1);
+
+        return "Anonymous" + result.ToString();
     }
 }
