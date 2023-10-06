@@ -408,7 +408,7 @@ public class QuestionBankController : BaseController
             // newResultShow.QuestionId = i;
             newResultShowList.Add(newResultShow);
         }
-        newInteract.ResultShowDTOs = newResultShowList;
+        // newInteract.ResultShowDTOs = newResultShowList;
         var InteractRS = _mapper.Map<QuestionBankInteract>(newInteract);
         // var resultShowAdd = _mapper.Map<List<Question>>(newResultShowList);
         // newInteract.ResultShowDTOs

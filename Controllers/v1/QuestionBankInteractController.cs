@@ -25,7 +25,7 @@ public class QuestionBankInteractController : BaseController
 
     [HttpGet]
     [Route("/QuestionBankInteracts")]
-    public async Task<IActionResult> GetQuestionBankInteracts() //Guid questionBankId
+    public async Task<IActionResult> Get() //Guid questionBankId
     {
         if (await _unitOfWork.QuestionBankInteracts.All() == null) return NotFound("QuestionBankInteracts not found");
         var result = _mapper.Map<List<QuestionBankInteractDTO>>(await _unitOfWork.QuestionBankInteracts.All());
@@ -363,7 +363,7 @@ public class QuestionBankInteractController : BaseController
             int index = resultShows.IndexOf(resultShow);
 
             // Set the resultScore property based on the corresponding value in the booList
-            resultShows[index].ResultScore = boolList[index] ? scoreListNoId[index] : 0;
+            resultShows[index].ResultScore = (boolList[index] && resultShows[index].OnAnswers.Any())? scoreListNoId[index] : 0;
         }
         result.ResultShows = resultShows;
         await _unitOfWork.QuestionBankInteracts.Update(result);
@@ -471,7 +471,7 @@ public class QuestionBankInteractController : BaseController
             int index = resultShows.IndexOf(resultShow);
 
             // Set the resultScore property based on the corresponding value in the booList
-            resultShows[index].ResultScore = boolList[index] ? scoreListNoId[index] : 0;
+            resultShows[index].ResultScore = (boolList[index] && resultShows[index].OnAnswers.Any()) ? scoreListNoId[index] : 0;
         }
         result.ResultShows = resultShows;
         result.UserId = userRS.Id;

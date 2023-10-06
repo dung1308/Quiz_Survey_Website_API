@@ -62,7 +62,7 @@ public class QuestionBankInteractRepository : GenericRepository<QuestionBankInte
 
     public async Task<PaginationDTO<object>> GetQuestionBankInteractsWithPaginationAsync(string permission, int userId, int pageSize, int pageNumber)
     {
-        var queryQI = questionBankInteracts.AsNoTracking().Where(x => x.UserId == userId).Select(x => new
+        var queryQI = questionBankInteracts.AsNoTracking().Where(x => (x.UserId == userId && x.ResultShows.Any())).Select(x => new
         {
             x.Id,
             x.QuestionBankId,
@@ -74,7 +74,8 @@ public class QuestionBankInteractRepository : GenericRepository<QuestionBankInte
         });
         if (permission == "All")
         {
-            queryQI = questionBankInteracts.AsNoTracking().Where(x => x.UserId == userId || x.QuestionBank.UserId == userId).Select(x => new
+            queryQI = questionBankInteracts.AsNoTracking().Where(x => (x.UserId == userId || x.QuestionBank.UserId == userId) && x.ResultShows.Any())
+            .Select(x => new
             {
                 x.Id,
                 x.QuestionBankId,
