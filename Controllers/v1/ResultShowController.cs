@@ -33,7 +33,7 @@ public class ResultShowController : BaseController
 
     [HttpGet]
     [Route("/User/{userId}/questionBankInteract/{questionBankInteractsId}/ResultShow")]
-    public async Task<IActionResult> GetResultShowByQuestionBankInteract(int userId, int questionBankInteractsId) //Guid questionBankId
+    public async Task<IActionResult> GetResultShowByUserAndQuestionBankInteract(int userId, int questionBankInteractsId) //Guid questionBankId
     {
         var questionBankInteracts = await _unitOfWork.QuestionBankInteracts.GetAllByUser(userId);
         if (questionBankInteracts == null) return NotFound();
@@ -43,6 +43,34 @@ public class ResultShowController : BaseController
         if(resultShow == null) return NotFound("resultShow not found");
         var result = _mapper.Map<ResultShowDTO>(resultShow);
         return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetResultShowByQuestionBankInteract(int questionBankInteractsId) //Guid questionBankId
+    {
+        var resultShows = await _unitOfWork.ResultShows.All();
+        if (resultShows == null) return NotFound();
+        // var questionBankInteract = questionBankInteracts.FirstOrDefault(x => x?.Id == questionBankInteractsId);
+        // if (questionBankInteract == null) return NotFound("QuestionBankInteract not Found");
+        var resultShow = resultShows.Where(x => x?.QuestionBankInteractId == questionBankInteractsId);
+        if(resultShow == null) return NotFound("resultShow not found");
+        var result = _mapper.Map<List<ResultShowDTO>>(resultShow);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetAnswerReport(int questionBankInteractsId) //Guid questionBankId
+    {
+        var resultShows = await _unitOfWork.ResultShows.GetAnswerReport(questionBankInteractsId);
+        if (resultShows == null) return NotFound();
+        // var questionBankInteract = questionBankInteracts.FirstOrDefault(x => x?.Id == questionBankInteractsId);
+        // if (questionBankInteract == null) return NotFound("QuestionBankInteract not Found");
+        // var resultShow = resultShows.Where(x => x?.QuestionBankInteractId == questionBankInteractsId);
+        // if(resultShow == null) return NotFound("resultShow not found");
+        // var result = _mapper.Map<List<ResultShowDTO>>(resultShow);
+        return Ok(resultShows);
     }
 
     [HttpGet]

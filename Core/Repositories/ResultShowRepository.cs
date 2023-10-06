@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using survey_quiz_app.Data;
 using survey_quiz_app.DTO.Incoming;
+using survey_quiz_app.DTO.Outgoing;
 using survey_quiz_app.Models;
 
 namespace survey_quiz_app.Core.Repositories;
@@ -62,4 +63,48 @@ public class ResultShowRepository : GenericRepository<ResultShow, int>, IResultS
         var resultShows = await _context.ResultShows.Where(q => q.QuestionId == QuestionId && q.QuestionBankInteractId == QuestionBankInteractId).ToListAsync();
         return resultShows;
     }
+
+    public Task<AnswerReportDTOResponse<object>> GetAnswerReport(int QuestionBankInteractId)
+    {
+        var queryQI = _context.ResultShows.AsNoTracking().Where(x => x.QuestionBankInteractId == QuestionBankInteractId).Select(x => new
+        {
+            Id = x.Id,
+            QuestionName = x.Question.QuestionName ?? "Unknown",
+            Result = x.ResultScore,
+            OnAnswers = x.OnAnswers,
+            RightAnswers = x.Question.Answers,
+        });
+
+        var data = queryQI;
+
+        var result = new AnswerReportDTOResponse<object>
+        {
+            Data = data != null ? data : new List<object>()
+        };
+
+
+        return Task.FromResult(result);
+    }
+
+    // Task<AnswerReportDTOResponse<object>> IResultShowRepository.GetAnswerReport(int QuestionBankInteractId)
+    // {
+    //     var queryQI = _context.ResultShows.AsNoTracking().Where(x => x.QuestionBankInteractId == QuestionBankInteractId).Select(x => new
+    //     {
+    //         Id = x.Id,
+    //         QuestionName = x.Question.QuestionName ?? "Unknown",
+    //         Result = x.ResultScore,
+    //         OnAnswers = x.OnAnswers,
+    //         RightAnswers = x.Question.Answers,
+    //     });
+
+    //     var data = queryQI;
+
+    //     var result = new AnswerReportDTOResponse<object>
+    //     {
+    //         Data = data != null ? data : new List<object>()
+    //     };
+
+
+    //     return result;
+    // }
 }

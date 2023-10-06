@@ -426,7 +426,7 @@ public class QuestionBankInteractController : BaseController
         await _unitOfWork.CompleteAsync();
 
         var result = _mapper.Map<QuestionBankInteract>(questionBankInteract);
-        if (result == null) return BadRequest();
+        if (result == null) return NotFound("Interaction Not Found");
         if (result.ResultShows == null)
         {
             result.ResultScores = 0;
