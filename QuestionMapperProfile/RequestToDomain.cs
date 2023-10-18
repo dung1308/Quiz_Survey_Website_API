@@ -142,5 +142,7 @@ public class RequestToDomain : Profile
         .ForMember(dest => dest.ResultShows,
         opt => opt.MapFrom(src => src.ResultShowDTOs))
         .ReverseMap();
+
+
     }
 }

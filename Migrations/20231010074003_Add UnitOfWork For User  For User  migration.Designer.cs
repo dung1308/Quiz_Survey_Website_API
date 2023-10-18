@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using survey_quiz_app.Data;
 
@@ -11,9 +12,11 @@ using survey_quiz_app.Data;
 namespace survey_quiz_app.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231010074003_Add UnitOfWork For User  For User  migration")]
+    partial class AddUnitOfWorkForUserForUsermigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,10 +111,6 @@ namespace survey_quiz_app.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("ParticipantIdListString")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("StartDate")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -132,10 +131,6 @@ namespace survey_quiz_app.Migrations
                     b.Property<string>("Timer")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("UserDoneIdListString")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -238,13 +233,14 @@ namespace survey_quiz_app.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("IsNightMode")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -267,6 +263,31 @@ namespace survey_quiz_app.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("survey_quiz_app.Models.NightMode", b =>
+                {
+                    b.HasBaseType("survey_quiz_app.Models.User");
+
+                    b.Property<bool?>("IsNightMode")
+                        .HasColumnType("bit");
+
+                    b.HasDiscriminator().HasValue("NightMode");
+                });
+
+            modelBuilder.Entity("survey_quiz_app.Models.UserToken", b =>
+                {
+                    b.HasBaseType("survey_quiz_app.Models.User");
+
+                    b.Property<string>("Token")
+                        .HasMaxLength(10000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("UserToken");
                 });
 
             modelBuilder.Entity("survey_quiz_app.Models.Question", b =>

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using survey_quiz_app.Core;
 using survey_quiz_app.Data;
 using survey_quiz_app.DTO.Incoming;
+using survey_quiz_app.DTO.Outgoing;
 using survey_quiz_app.Models;
 
 namespace survey_quiz_app.Controllers.v1;
@@ -19,7 +20,7 @@ public class UserController : ControllerBase
     protected readonly IUnitOfWork _unitOfWork;
     protected readonly IMapper _mapper;
 
-    public UserController(IUnitOfWork unitOfWork, IMapper mapper) 
+    public UserController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -96,7 +97,7 @@ public class UserController : ControllerBase
         // // await _unitOfWork.Users.Delete(newUser);
         // return Ok(result);
         var users = await _unitOfWork.Users.All();
-        if(users == null || users.Count() == 0) return NotFound("Users not found");
+        if (users == null || users.Count() == 0) return NotFound("Users not found");
         var result = _mapper.Map<List<UserDTO>>(await _unitOfWork.Users.All());
         return Ok(result);
     }
@@ -136,18 +137,22 @@ public class UserController : ControllerBase
         var users = await _unitOfWork.Users.All();
         var usersList = users.ToList();
         var userNameList = users.Select((e) => e.UserName);
-        if ( !userNameList.Contains(loginUser.UserName)) return NotFound("There is no such username");
+        if (!userNameList.Contains(loginUser.UserName)) return NotFound("There is no such username");
         var user = await _unitOfWork.Users.LoginData(loginUser.UserName);
-        if (user.Password == loginUser.Password) return Ok(user);
+        if (user == null) return NotFound("User Not Found");
+        UserGetDTOResponse responseDTO = new UserGetDTOResponse{Id = user.Id,UserName = user.UserName, RoleId = user.RoleId, IsNightMode = user.IsNightMode};
+        if (user.Password == loginUser.Password) return Ok(responseDTO);
         return NotFound("Wrong Password");
     }
 
+
+    
     [HttpPost]
     [Route("/AddUser")]
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> AddUser([FromBody] UserDTO user)
     {
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest();
         var result = _mapper.Map<User>(user);
         await _unitOfWork.Users.Add(result);
@@ -162,7 +167,7 @@ public class UserController : ControllerBase
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Register([FromBody] UserDTO user)
     {
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest();
         var result = _mapper.Map<User>(user);
         var users = await _unitOfWork.Users.All();
@@ -176,8 +181,8 @@ public class UserController : ControllerBase
         // return CreatedAtAction(nameof(GetUser), routeValues:new {userId = result.Id}, value:userDTO);
     }
 
-    
-    
+
+
 
     [HttpDelete]
     [Route("/DeleteUser")]
@@ -185,7 +190,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> DeleteUser(int id)
     {
         var user = await _unitOfWork.Users.GetById(id);
-        if(user == null) return NotFound();
+        if (user == null) return NotFound();
         await _unitOfWork.Users.Delete(user);
         await _unitOfWork.CompleteAsync();
         return NoContent();
@@ -194,15 +199,15 @@ public class UserController : ControllerBase
     [HttpPut]
     [Route("/UpdateUser")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> UpdateUser(int id,[FromBody] UserDTO user)
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDTO user)
     {
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest();
         var result = await _unitOfWork.Users.GetById(id);
-        if (result == null) 
+        if (result == null)
             return NotFound();
         var editUser = _mapper.Map<User>(user);
-        if(editUser == null) return NotFound();
+        if (editUser == null) return NotFound();
 
         result.UserName = editUser.UserName;
         result.Password = editUser.Password;
@@ -214,5 +219,26 @@ public class UserController : ControllerBase
 
         return NoContent();
     }
-    
+
+    [HttpPut]
+    [Route("/[action]")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> ChangeNightMode(int id, [FromBody] UserDTO user)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+        var result = await _unitOfWork.Users.GetById(id);
+        if (result == null)
+            return NotFound();
+        var editUser = _mapper.Map<User>(user);
+        if (editUser == null) return NotFound();
+
+        result.IsNightMode = editUser.IsNightMode;
+
+        await _unitOfWork.Users.Update(result);
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
+    }
+
 }

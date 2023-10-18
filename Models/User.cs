@@ -19,6 +19,9 @@ public class User
     [StringLength(1000)]
     [DataType(DataType.EmailAddress)]
     public string Email { get; set; } = string.Empty;
+    public Boolean IsNightMode { get; set; }
+    // [StringLength(1000)]
+    // public string Token { get; set; } = string.Empty;
 
     public int? RoleId { get; set; }
 
@@ -31,5 +34,5 @@ public class User
     public Role? Role { get; set; }
 
     public string? Permission => Role?.Permission;
-    
+
 }

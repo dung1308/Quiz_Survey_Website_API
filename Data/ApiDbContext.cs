@@ -23,6 +23,8 @@ public class ApiDbContext : DbContext
     public DbSet<ResultShow> ResultShows { get; set; }
 
     public DbSet<QuestionBankInteract> QuestionBankInteracts { get; set; }
+
+    
     
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

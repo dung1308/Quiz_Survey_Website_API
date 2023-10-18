@@ -22,6 +22,8 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 
     public IResultShowRepository ResultShows { get; private set; }
 
+    
+
     public UnitOfWork(ApiDbContext context, ILoggerFactory loggerFactory)
     {
         Context = context;
@@ -35,6 +37,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         Roles = new RoleRepository(Context, _logger);
         QuestionBankInteracts = new QuestionBankInteractRepository(Context, _logger);
         ResultShows = new ResultShowRepository(Context, _logger);
+        
     }
 
 

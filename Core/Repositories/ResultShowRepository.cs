@@ -86,6 +86,20 @@ public class ResultShowRepository : GenericRepository<ResultShow, int>, IResultS
         return Task.FromResult(result);
     }
 
+    // public Task<AnswerReportDTOResponse<object>> GetAnswerReportWithScoreAsync(int QuestionBankInteractId)
+    // {
+    //     var scoreQI = _context.Questions.AsNoTracking();
+    //     var queryQI = _context.ResultShows.AsNoTracking().Where(x => x.QuestionBankInteractId == QuestionBankInteractId).Select(x => new
+    //     {
+    //         Id = x.Id,
+    //         QuestionName = x.Question.QuestionName ?? "Unknown",
+    //         Result = x.ResultScore,
+    //         OnAnswers = x.OnAnswers,
+    //         RightAnswers = x.Question.Answers,
+    //     });
+    //     throw new NotImplementedException();
+    // }
+
     // Task<AnswerReportDTOResponse<object>> IResultShowRepository.GetAnswerReport(int QuestionBankInteractId)
     // {
     //     var queryQI = _context.ResultShows.AsNoTracking().Where(x => x.QuestionBankInteractId == QuestionBankInteractId).Select(x => new

@@ -12,4 +12,5 @@ public interface IResultShowRepository: IGenericRepository<ResultShow, int>
 
     Task<IEnumerable<ResultShow?>> GetAllByQuestionAndQuestionBankInteract(int QuestionId, int QuestionBankInteractId);
     Task<AnswerReportDTOResponse<object>> GetAnswerReport(int QuestionBankInteractId);
+    // Task<AnswerReportDTOResponse<object>> GetAnswerReportWithScoreAsync(int QuestionBankInteractId);
 }

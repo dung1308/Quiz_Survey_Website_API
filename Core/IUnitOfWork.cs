@@ -14,6 +14,5 @@ public interface IUnitOfWork
     IRoleRepository Roles { get; }
     IQuestionBankInteractRepository QuestionBankInteracts { get; }
     IResultShowRepository ResultShows { get; }
-
     Task CompleteAsync();
 }

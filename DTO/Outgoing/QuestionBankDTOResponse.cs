@@ -17,4 +17,6 @@ public class QuestionBankDTOResponse
     public string? CategoryName { get; set; }
     public string? DateTimeNow { get; set; }
     public int? UserId { get; set; }
+    public IEnumerable<int>? ParticipantIdList { get; set; }
+    public IEnumerable<int>? UserDoneIdList { get; set; }
 }

@@ -277,6 +277,96 @@ public class QuestionBankController : BaseController
         return Ok(result);
     }
 
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetSurveysWithPaginationAscOrDesAsync(int userId, int pageSize, int pageNumber, string filterAsc)
+    {
+        var result = await _unitOfWork.QuestionBankInteracts.GetSurveysWithPaginationAscOrDesAsync(userId, pageSize, pageNumber, filterAsc);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetSurveyWithPaginationByExpiredDateAsync(int userId, int pageSize, int pageNumber, string filterAsc)
+    {
+        var result = await _unitOfWork.QuestionBankInteracts.GetSurveyWithPaginationByExpiredDateAsync(userId, pageSize, pageNumber, filterAsc);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetSurveyWithPaginationWithCategoryAsync(int userId, int pageSize, int pageNumber, string filterAsc, int categoryId)
+    {
+        var result = await _unitOfWork.QuestionBankInteracts.GetSurveyWithPaginationWithCategoryAsync(userId, pageSize, pageNumber, filterAsc, categoryId);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetSurveyWithPaginationWithSurveyNameAsync(int userId, int pageSize, int pageNumber, string filterAsc, string surveyName)
+    {
+        var result = await _unitOfWork.QuestionBankInteracts.GetSurveyWithPaginationWithSurveyNameAsync(userId, pageSize, pageNumber, filterAsc, surveyName);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetSurveyWithPaginationWithOwnerAsync(int userId, int pageSize, int pageNumber, string filterAsc, string owner)
+    {
+        var result = await _unitOfWork.QuestionBankInteracts.GetSurveyWithPaginationWithOwnerAsync(userId, pageSize, pageNumber, filterAsc, owner);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetQuestionBankWithPaginationAscOrDesAsync(int userId, int pageSize, int pageNumber, string filterAsc)
+    {
+        var result = await _unitOfWork.QuestionBanks.GetQuestionBankWithPaginationAscOrDesAsync(userId, pageSize, pageNumber, filterAsc);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetQuestionBankWithPaginationWithCategoryAsync(int userId, int pageSize, int pageNumber, string filterAsc, int categoryId)
+    {
+        var result = await _unitOfWork.QuestionBanks.GetQuestionBankWithPaginationWithCategoryAsync(userId, pageSize, pageNumber, filterAsc, categoryId);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetQuestionBankWithPaginationWithOwnerAsync(int userId, int pageSize, int pageNumber, string filterAsc, string owner)
+    {
+        var result = await _unitOfWork.QuestionBanks.GetQuestionBankWithPaginationWithOwnerAsync(userId, pageSize, pageNumber, filterAsc, owner);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetQuestionBankWithPaginationWithSurveyNameAsync(int userId, int pageSize, int pageNumber, string filterAsc, string surveyName)
+    {
+        var result = await _unitOfWork.QuestionBanks.GetQuestionBankWithPaginationWithSurveyNameAsync(userId, pageSize, pageNumber, filterAsc, surveyName);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetQuestionBankWithPaginationByExpiredDateAsync(int userId, int pageSize, int pageNumber, string filterAsc)
+    {
+        var result = await _unitOfWork.QuestionBanks.GetQuestionBankWithPaginationByExpiredDateAsync(userId, pageSize, pageNumber, filterAsc);
+
+        return Ok(result);
+    }
+
 
 
     [HttpPost]
@@ -641,4 +731,39 @@ public class QuestionBankController : BaseController
         return NoContent();
     }
 
+    [HttpPut]
+    [Route("/[action]")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetAndSetParticipantListAsync(UserDTO user, int questionBankId)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+        var baseResult = await _unitOfWork.QuestionBanks.GetById(questionBankId);
+        var baseResultDTO = _mapper.Map<QuestionBankDTO>(baseResult);
+        var result = await _unitOfWork.QuestionBanks.GetAndSetParticipantListAsync(user, questionBankId);
+        if (result == null)
+            return NotFound("QuestionBank Not Found");
+
+        await _unitOfWork.QuestionBanks.Update(result);
+        await _unitOfWork.CompleteAsync();
+        return Ok(baseResultDTO);
+
+    }
+
+    [HttpPut]
+    [Route("/[action]")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> RemoveParticipantIdAsync(UserDTO user, int questionBankId)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+        var result = await _unitOfWork.QuestionBanks.RemoveParticipantIdAsync(user, questionBankId);
+        if (result == null)
+            return NotFound("QuestionBank Not Found");
+
+        await _unitOfWork.QuestionBanks.Update(result);
+        await _unitOfWork.CompleteAsync();
+        return Ok(result);
+
+    }
 }

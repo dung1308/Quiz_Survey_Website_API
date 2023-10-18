@@ -109,20 +109,79 @@ public class QuestionBankInteractController : BaseController
 
     [HttpGet]
     [Route("/[action]")]
-    public async Task<IActionResult> GetQuestionBankInteractsAsync(string permission, int userId, int pageSize, int pageNumber) //Guid questionBankId
+    public async Task<IActionResult> GetQuestionBankInteractsWithPaginationAsync(string permission, int userId, int pageSize, int pageNumber)
     {
-       var result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsWithPaginationAsync(permission, userId,pageSize,pageNumber);
+        var result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsWithPaginationAsync(permission, userId, pageSize, pageNumber);
 
-       return Ok(result);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetReportsSummaryWithPaginationAsync(string permission, int userId, int pageSize, int pageNumber, string filterAsc)
+    {
+        PaginationDTO<object> result;
+        result = await _unitOfWork.QuestionBankInteracts.GetReportsSummaryWithPaginationAsync(permission, userId, pageSize, pageNumber, filterAsc);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetReportsFilteredAsync(int userId, int pageSize, int pageNumber, bool ascOrNot, string? ownerName, string? surveyName, string? userName)
+    {
+        PaginationDTO<object> result;
+        result = await _unitOfWork.QuestionBankInteracts.GetReportsFilteredAsync(userId, pageSize, pageNumber, ascOrNot, ownerName, surveyName, userName);
+
+        return Ok(result);
+    }
+
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetQuestionBankInteractsWithPaginationAscOrDesAsync(string permission, int userId, int pageSize, int pageNumber, string filterAsc)
+    {
+        PaginationDTO<object> result;
+        result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsWithPaginationAscOrDesAsync(permission, userId, pageSize, pageNumber, filterAsc);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetQuestionBankInteractsWithPaginationWithQuestionBankNameAsync(string permission, int userId, int pageSize, int pageNumber, string filterAsc, string questionBankName = "")
+    {
+        PaginationDTO<object> result;
+        if (string.IsNullOrWhiteSpace(questionBankName))
+            result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsWithPaginationAscOrDesAsync(permission, userId, pageSize, pageNumber, filterAsc);
+        else
+            result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsWithPaginationWithQuestionBankNameAsync(permission, userId, pageSize, pageNumber, filterAsc, questionBankName);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("/[action]")]
+    public async Task<IActionResult> GetQuestionBankInteractsWithPaginationWithUserNameAsync(string permission, int userId, int pageSize, int pageNumber, string filterAsc, string userName = "")
+    {
+        PaginationDTO<object> result;
+        Console.WriteLine(userName);
+        // if (string.IsNullOrWhiteSpace(userName))
+        if (string.IsNullOrWhiteSpace(userName))
+            result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsWithPaginationAscOrDesAsync(permission, userId, pageSize, pageNumber, filterAsc);
+        else
+            result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsWithPaginationWithUserNameAsync(permission, userId, pageSize, pageNumber, filterAsc, userName);
+
+        return Ok(result);
     }
 
     [HttpGet]
     [Route("/[action]")]
     public async Task<IActionResult> GetQuestionBankInteractsForAdminAsync(int userId, int pageSize, int pageNumber) //Guid questionBankId
     {
-       var result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsForAdminWithPaginationAsync(userId,pageSize,pageNumber);
+        var result = await _unitOfWork.QuestionBankInteracts.GetQuestionBankInteractsForAdminWithPaginationAsync(userId, pageSize, pageNumber);
 
-       return Ok(result);
+        return Ok(result);
     }
 
     [HttpGet]
@@ -165,7 +224,7 @@ public class QuestionBankInteractController : BaseController
             r.ResultScores
         }).Where((m) => m.QuestionBankId.HasValue && ownedQuestionBanksIds.Contains(m.QuestionBankId.Value))
         .ToList();
-        
+
 
         var distinctResponse = newResponse.GroupBy(x => new { x.SurveyName, x.UserName })
                                   .Select(g => g.First())
@@ -180,7 +239,7 @@ public class QuestionBankInteractController : BaseController
         var pagedItems = combinedList.Skip((pageNumber - 1) * pageSize)
                              .Take(pageSize)
                              .ToList();
-        var resultResponse = new {pagedItems, pages = totalPages};
+        var resultResponse = new { pagedItems, pages = totalPages };
 
         return Ok(resultResponse);
     }
@@ -363,7 +422,7 @@ public class QuestionBankInteractController : BaseController
             int index = resultShows.IndexOf(resultShow);
 
             // Set the resultScore property based on the corresponding value in the booList
-            resultShows[index].ResultScore = (boolList[index] && resultShows[index].OnAnswers.Any())? scoreListNoId[index] : 0;
+            resultShows[index].ResultScore = (boolList[index] && resultShows[index].OnAnswers.Any()) ? scoreListNoId[index] : 0;
         }
         result.ResultShows = resultShows;
         await _unitOfWork.QuestionBankInteracts.Update(result);
@@ -543,7 +602,47 @@ public class QuestionBankInteractController : BaseController
 
         await _unitOfWork.QuestionBankInteracts.Delete(questionBankInteract);
         await _unitOfWork.CompleteAsync();
-        return NoContent();
+        var resultDTO = _mapper.Map<QuestionBankInteractDTO>(questionBankInteract);
+        return Ok(resultDTO);
+    }
+
+    [HttpDelete]
+    [Route("/[action]")]
+    public async Task<IActionResult> RemoveInteractAndAllowJoining(int userId, QuestionBankInteractDTO interact)
+    {
+        var result = await _unitOfWork.QuestionBankInteracts.RemoveInteractAndAllowJoining(userId, interact);
+        if (result == null && interact == null && interact.QuestionBankId == null) return NotFound();
+        var questionBank = await _unitOfWork.QuestionBanks.GetById((int)interact.QuestionBankId);
+        questionBank.UserDoneIdList = questionBank.UserDoneIdList.Where(q => q != userId).ToList();
+
+        var questions = await _unitOfWork.Questions.All();
+        var existedQuestions = questions.ToList().Where(x => x.QuestionBankId == result.QuestionBankId).ToList();
+        if (existedQuestions != null)
+        {
+            var questionIdList = existedQuestions.Select(q => q?.Id).Distinct().ToList();
+            List<ResultShow> resultShowList = new List<ResultShow>();
+            foreach (int i in questionIdList)
+            {
+                var resultShowsAll = await _unitOfWork.ResultShows.All();
+                var resultShowsList = resultShowsAll.ToList();
+                var resultShows = resultShowsList.Where(q => q.QuestionId == i).ToList();
+                if (resultShows != null)
+                {
+                    resultShowList.AddRange(resultShows);
+                }
+            }
+            result.ResultShows = resultShowList;
+        }
+
+        var resultDTO = _mapper.Map<QuestionBankInteractDTO>(result);
+
+        // await _unitOfWork.QuestionBanks.Update(questionBank);
+        // await _unitOfWork.CompleteAsync();
+
+        // await _unitOfWork.QuestionBankInteracts.Delete(result);
+        // await _unitOfWork.CompleteAsync();
+
+        return Ok(resultDTO);
     }
 
     [HttpPut]
