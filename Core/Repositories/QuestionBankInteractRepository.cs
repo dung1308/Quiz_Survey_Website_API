@@ -352,7 +352,7 @@ public class QuestionBankInteractRepository : GenericRepository<QuestionBankInte
         // var pages = Convert.ToInt32(Math.Ceiling(records * 1.0 / pageSize));
         // var resultData = await newdata.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
 
-        var newdata = groupByQuery.Where(x => x.SurveyName.Contains(questionBankName));
+        var newdata = groupByQuery.Where(x => x.SurveyName.ToUpper().Contains(questionBankName.ToUpper()));
         var records = newdata.Count();
         if (pageSize == -1) pageSize = records;
         var pages = Convert.ToInt32(Math.Ceiling(records * 1.0 / pageSize));
@@ -467,7 +467,7 @@ public class QuestionBankInteractRepository : GenericRepository<QuestionBankInte
         // groupByQuery = groupByQuery.Where(x => CompareString.findSimilarity(x.UserName, userName) > 0.6).OrderByDescending(x => CompareString.findSimilarity(x.UserName, userName));
         // groupByQuery = groupByQuery.Where(x => SqlFunctions.StringSimilarity(x.SurveyName, questionBankName) > 0.7);
 
-        var newdata = groupByQuery.Where(x => x.UserName.Contains(userName));
+        var newdata = groupByQuery.Where(x => x.UserName.ToUpper().Contains(userName.ToUpper()));
         var records = newdata.Count();
         if (pageSize == -1) pageSize = records;
         var pages = Convert.ToInt32(Math.Ceiling(records * 1.0 / pageSize));
@@ -721,7 +721,7 @@ public class QuestionBankInteractRepository : GenericRepository<QuestionBankInte
         var questionBanksQI = _context.QuestionBanks.AsNoTracking();
         var questionBankInteractsQI = _context.QuestionBankInteracts.AsNoTracking().Where(q => q.UserId == userId);
         var questionBankIds = questionBankInteractsQI.Select(q => q.QuestionBankId).Distinct().ToList();
-        var questionBanks = _context.QuestionBanks.Where(q => questionBankIds.Contains(q.Id) && q.Owner.Contains(owner));
+        var questionBanks = _context.QuestionBanks.Where(q => questionBankIds.Contains(q.Id) && q.Owner.ToUpper().Contains(owner.ToUpper()));
 
         var records = await questionBanks.CountAsync();
         if (pageSize == -1) pageSize = records;
@@ -748,7 +748,7 @@ public class QuestionBankInteractRepository : GenericRepository<QuestionBankInte
         var questionBanksQI = _context.QuestionBanks.AsNoTracking();
         var questionBankInteractsQI = _context.QuestionBankInteracts.AsNoTracking().Where(q => q.UserId == userId);
         var questionBankIds = questionBankInteractsQI.Select(q => q.QuestionBankId).Distinct().ToList();
-        var questionBanks = _context.QuestionBanks.Where(q => questionBankIds.Contains(q.Id) && q.SurveyName.Contains(surveyName));
+        var questionBanks = _context.QuestionBanks.Where(q => questionBankIds.Contains(q.Id) && q.SurveyName.ToUpper().Contains(surveyName.ToUpper()));
 
         var records = await questionBanks.CountAsync();
         if (pageSize == -1) pageSize = records;
@@ -883,15 +883,15 @@ public class QuestionBankInteractRepository : GenericRepository<QuestionBankInte
 
         if (!String.IsNullOrWhiteSpace(ownerName))
         {
-            groupByQuery = groupByQuery.Where(x => x.OwnerName.Contains(ownerName));
+            groupByQuery = groupByQuery.Where(x => x.OwnerName.ToUpper().Contains(ownerName.ToUpper()));
         }
         if (!String.IsNullOrWhiteSpace(surveyName))
         {
-            groupByQuery = groupByQuery.Where(x => x.SurveyName.Contains(surveyName));
+            groupByQuery = groupByQuery.Where(x => x.SurveyName.ToUpper().Contains(surveyName.ToUpper()));
         }
         if (!String.IsNullOrWhiteSpace(userName))
         {
-            groupByQuery = groupByQuery.Where(x => x.UserName.Contains(userName));
+            groupByQuery = groupByQuery.Where(x => x.UserName.ToUpper().Contains(userName.ToUpper()));
         }
 
         var records = await groupByQuery.CountAsync();
