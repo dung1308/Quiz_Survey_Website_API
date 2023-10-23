@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "IS3eKF1YPDCuf1QyIb2RwPV1mRhDxMAJOvgE9MM0TTYOGHkpkn9xPONegBAKMK9I5144Bn3VDjIJ+MOIja5+6Q==",
+  "dgSpecHash": "CIDh0htwK/MPUj5MCNsjw56rqtlKDu64MKzqa+kkyG/hkdrTNNtYdchxPJ9f+fZpPVqZSdSchhe5xNHToNWwxw==",
   "success": true,
   "projectFilePath": "E:\\Work Related\\DotNet\\Quiz_Survey_Website\\survey_quiz_app_API\\survey-quiz-app\\survey-quiz-app.csproj",
   "expectedPackageFiles": [
@@ -15,6 +15,7 @@
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnet.webapi.client\\5.2.9\\microsoft.aspnet.webapi.client.5.2.9.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnet.webapi.core\\5.2.9\\microsoft.aspnet.webapi.core.5.2.9.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnet.webapi.cors\\5.2.9\\microsoft.aspnet.webapi.cors.5.2.9.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.12\\microsoft.aspnetcore.authentication.jwtbearer.7.0.12.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.mvc.versioning\\5.1.0\\microsoft.aspnetcore.mvc.versioning.5.1.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.mvc.versioning.apiexplorer\\5.1.0\\microsoft.aspnetcore.mvc.versioning.apiexplorer.5.1.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.4\\microsoft.aspnetcore.openapi.7.0.4.nupkg.sha512",

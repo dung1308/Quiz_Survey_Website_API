@@ -86,3 +86,4 @@ E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\b
 E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\System.Web.Http.Cors.dll
 E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\Newtonsoft.Json.dll
 E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll
+E:\Work Related\DotNet\Quiz_Survey_Website\survey_quiz_app_API\survey-quiz-app\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
