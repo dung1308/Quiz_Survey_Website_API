@@ -217,7 +217,8 @@ public class QuestionBankRepository : GenericRepository<QuestionBank, int>, IQue
     public async Task<QuestionBank?> GetAndSetParticipantListAsync(UserDTO user, int questionBankId)
     {
         var queryQI = await _context.QuestionBanks.AsNoTracking().FirstOrDefaultAsync(x => x.Id == questionBankId);
-        if (queryQI.UserId == user.Id) return queryQI;
+        var userDoneIdList = queryQI.UserDoneIdList.ToList();
+        if (queryQI.UserId == user.Id || userDoneIdList.Contains(user.Id)) return queryQI;
         var participantListId = queryQI.ParticipantIdList.ToList();
         participantListId.Add(user.Id);
         queryQI.ParticipantIdList = participantListId;
@@ -235,6 +236,18 @@ public class QuestionBankRepository : GenericRepository<QuestionBank, int>, IQue
         queryQI.ParticipantIdList = participantListId;
         queryQI.Status = "Busy";
         queryQI.EnableStatus = true;
+        return queryQI;
+    }
+
+    public async Task<QuestionBank?> RemoveUserDoneIdAsync(UserDTO user, int questionBankId)
+    {
+        var queryQI = await _context.QuestionBanks.AsNoTracking().FirstOrDefaultAsync(x => x.Id == questionBankId);
+        if (queryQI.UserId == user.Id) return queryQI;
+        var userDoneIdList = queryQI.UserDoneIdList.ToList();
+        userDoneIdList.Remove(user.Id);
+        queryQI.UserDoneIdList = userDoneIdList;
+        // queryQI.Status = "Busy";
+        // queryQI.EnableStatus = true;
         return queryQI;
     }
 }

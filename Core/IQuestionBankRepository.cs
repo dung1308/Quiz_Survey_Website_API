@@ -16,5 +16,6 @@ public interface IQuestionBankRepository : IGenericRepository<QuestionBank, int>
     Task<PaginationDTO<object>> GetQuestionBankWithPaginationByExpiredDateAsync(int userId, int pageSize, int pageNumber, string ascForDate);
     Task<QuestionBank?> GetAndSetParticipantListAsync(UserDTO user, int questionBankId);
     Task<QuestionBank?> RemoveParticipantIdAsync(UserDTO user, int questionBankId);
+    Task<QuestionBank?> RemoveUserDoneIdAsync(UserDTO user, int questionBankId);
     string? GenerateRandomString(string[] excludedStrings, int length);
 }

@@ -391,6 +391,28 @@ public class QuestionBankInteractController : BaseController
         await _unitOfWork.CompleteAsync();
         var questionIdList = resultShows.Select(q => q?.QuestionId).Distinct().ToList();
         var questionBank = await _unitOfWork.QuestionBanks?.GetById(result.QuestionBankId ?? 0);
+        var questionBankList = questionBank.UserDoneIdList.ToList();
+        var userDoneListId = questionBank.UserDoneIdList.ToList();
+        if (userDoneListId.Contains((int)questionBankInteract.UserId)) return NotFound("There is error in matching user Id already done");
+        if (questionBank.UserId != (int)questionBankInteract.UserId)
+        {
+            userDoneListId.Add((int)questionBankInteract.UserId);
+            questionBank.UserDoneIdList = userDoneListId;
+            await _unitOfWork.QuestionBanks.Update(questionBank);
+            await _unitOfWork.CompleteAsync();
+        }
+        // if (questionBank.UserId == questionBankInteract.UserId && questionBankInteract.UserId != null)
+        // {
+        //     // questionBankList = questionBankList.Concat(new List<int> { questionBankInteract.UserId.Value }).ToList();
+        //     // questionBank.UserDoneIdList = questionBankList;
+
+        // }
+        // else
+        // {
+        //     await _unitOfWork.QuestionBankInteracts.Delete(result);
+        //     await _unitOfWork.CompleteAsync();
+        //     return NotFound("UserId in QuestionBankInteract is null or not found in QuestionBank");
+        // }
         var questions = questionBank.Questions;
         var scoreList = new List<IDictionary<string, object>>();
         var scoreListNoId = new List<double?>();
@@ -608,15 +630,28 @@ public class QuestionBankInteractController : BaseController
 
     [HttpDelete]
     [Route("/[action]")]
-    public async Task<IActionResult> RemoveInteractAndAllowJoining(int userId, QuestionBankInteractDTO interact)
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> DeleteReportAndAllowRedo(UserDTO user, int id)
     {
-        var result = await _unitOfWork.QuestionBankInteracts.RemoveInteractAndAllowJoining(userId, interact);
-        if (result == null && interact == null && interact.QuestionBankId == null) return NotFound();
-        var questionBank = await _unitOfWork.QuestionBanks.GetById((int)interact.QuestionBankId);
-        questionBank.UserDoneIdList = questionBank.UserDoneIdList.Where(q => q != userId).ToList();
-
+        var questionBankInteract = await _unitOfWork.QuestionBankInteracts.GetById(id);
+        if (questionBankInteract == null) return NotFound();
         var questions = await _unitOfWork.Questions.All();
-        var existedQuestions = questions.ToList().Where(x => x.QuestionBankId == result.QuestionBankId).ToList();
+
+        var existedQuestions = questions.ToList().Where(x => x.QuestionBankId == questionBankInteract.QuestionBankId).ToList();
+        var removeUserDone = await _unitOfWork.QuestionBanks.RemoveUserDoneIdAsync(user, (int)questionBankInteract.QuestionBankId);
+        await _unitOfWork.QuestionBanks.Update(removeUserDone);
+        await _unitOfWork.CompleteAsync();
+        // var questionBank = await _unitOfWork.QuestionBanks?.GetById(questionBankInteract.QuestionBankId ?? 0);
+        // var questionBankList = questionBank.UserDoneIdList.ToList();
+        // var userDoneListId = questionBank.UserDoneIdList.ToList();
+
+        // userDoneListId.Remove((int)questionBankInteract.UserId);
+        // questionBank.UserDoneIdList = userDoneListId;
+        // await _unitOfWork.QuestionBanks.Update(questionBank);
+        // await _unitOfWork.CompleteAsync();
+
+        
+
         if (existedQuestions != null)
         {
             var questionIdList = existedQuestions.Select(q => q?.Id).Distinct().ToList();
@@ -631,19 +666,53 @@ public class QuestionBankInteractController : BaseController
                     resultShowList.AddRange(resultShows);
                 }
             }
-            result.ResultShows = resultShowList;
+            questionBankInteract.ResultShows = resultShowList;
         }
 
-        var resultDTO = _mapper.Map<QuestionBankInteractDTO>(result);
-
-        // await _unitOfWork.QuestionBanks.Update(questionBank);
-        // await _unitOfWork.CompleteAsync();
-
-        // await _unitOfWork.QuestionBankInteracts.Delete(result);
-        // await _unitOfWork.CompleteAsync();
-
+        await _unitOfWork.QuestionBankInteracts.Delete(questionBankInteract);
+        await _unitOfWork.CompleteAsync();
+        var resultDTO = _mapper.Map<QuestionBankInteractDTO>(questionBankInteract);
         return Ok(resultDTO);
     }
+
+    // [HttpDelete]
+    // [Route("/[action]")]
+    // public async Task<IActionResult> RemoveInteractAndAllowJoining(int userId, QuestionBankInteractDTO interact)
+    // {
+    //     var result = await _unitOfWork.QuestionBankInteracts.RemoveInteractAndAllowJoining(userId, interact);
+    //     if (result == null && interact == null && interact.QuestionBankId == null) return NotFound();
+    //     var questionBank = await _unitOfWork.QuestionBanks.GetById((int)interact.QuestionBankId);
+    //     questionBank.UserDoneIdList = questionBank.UserDoneIdList.Where(q => q != userId).ToList();
+
+    //     var questions = await _unitOfWork.Questions.All();
+    //     var existedQuestions = questions.ToList().Where(x => x.QuestionBankId == result.QuestionBankId).ToList();
+    //     if (existedQuestions != null)
+    //     {
+    //         var questionIdList = existedQuestions.Select(q => q?.Id).Distinct().ToList();
+    //         List<ResultShow> resultShowList = new List<ResultShow>();
+    //         foreach (int i in questionIdList)
+    //         {
+    //             var resultShowsAll = await _unitOfWork.ResultShows.All();
+    //             var resultShowsList = resultShowsAll.ToList();
+    //             var resultShows = resultShowsList.Where(q => q.QuestionId == i).ToList();
+    //             if (resultShows != null)
+    //             {
+    //                 resultShowList.AddRange(resultShows);
+    //             }
+    //         }
+    //         result.ResultShows = resultShowList;
+    //     }
+
+    //     var resultDTO = _mapper.Map<QuestionBankInteractDTO>(result);
+
+    //     // await _unitOfWork.QuestionBanks.Update(questionBank);
+    //     // await _unitOfWork.CompleteAsync();
+
+    //     // await _unitOfWork.QuestionBankInteracts.Delete(result);
+    //     // await _unitOfWork.CompleteAsync();
+
+    //     return Ok(resultDTO);
+    // }
 
     [HttpPut]
     [Route("/UpdateQuestionBankInteract")]

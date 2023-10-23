@@ -749,6 +749,7 @@ public class QuestionBankController : BaseController
         return Ok(baseResultDTO);
 
     }
+    
 
     [HttpPut]
     [Route("/[action]")]
@@ -758,6 +759,23 @@ public class QuestionBankController : BaseController
         if (!ModelState.IsValid)
             return BadRequest();
         var result = await _unitOfWork.QuestionBanks.RemoveParticipantIdAsync(user, questionBankId);
+        if (result == null)
+            return NotFound("QuestionBank Not Found");
+
+        await _unitOfWork.QuestionBanks.Update(result);
+        await _unitOfWork.CompleteAsync();
+        return Ok(result);
+
+    }
+
+    [HttpPut]
+    [Route("/[action]")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> RemoveUserDoneIdAsync(UserDTO user, int questionBankId)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+        var result = await _unitOfWork.QuestionBanks.RemoveUserDoneIdAsync(user, questionBankId);
         if (result == null)
             return NotFound("QuestionBank Not Found");
 
